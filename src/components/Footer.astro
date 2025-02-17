@@ -1,0 +1,32 @@
+---
+const links = [
+  { name: 'Privacy Policy', href: '/privacy-policy' },
+  { name: 'Terms of Service', href: '/terms-of-service' },
+  { name: 'Cookie Policy', href: '/cookie-policy' },
+  { name: 'Contact', href: '/contact' }
+];
+---
+
+<footer class="bg-[#2B2D31] border-t border-[#1E1F22] mt-16">
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="flex items-center gap-2 mb-4 md:mb-0">
+        <img src="/logo.svg" alt="Hydra Dev Logo" class="w-8 h-8" />
+        <span class="text-xl font-bold">Hydra Dev</span>
+      </div>
+      <nav class="flex gap-6">
+        {links.map(link => (
+          <a 
+            href={link.href}
+            class="text-gray-300 hover:text-white transition-colors"
+          >
+            {link.name}
+          </a>
+        ))}
+      </nav>
+    </div>
+    <div class="mt-8 text-center text-gray-400">
+      <p>&copy; {new Date().getFullYear()} Hydra Dev. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

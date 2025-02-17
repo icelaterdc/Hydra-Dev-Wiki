@@ -1,0 +1,77 @@
+---
+---
+
+<div class="relative">
+  <div class="max-w-2xl mx-auto">
+    <input 
+      type="text" 
+      id="search-input"
+      placeholder="Search documentation..."
+      class="w-full px-4 py-3 bg-[#1E1F22] border border-[#2B2D31] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#5865F2] focus:border-transparent"
+    />
+    <div 
+      id="search-results" 
+      class="absolute w-full mt-2 bg-[#2B2D31] rounded-lg shadow-lg hidden"
+    >
+    </div>
+  </div>
+</div>
+
+<script>
+const searchData = [
+  { title: 'Getting Started with Discord.js', url: '/docs/discord-js/getting-started', category: 'Discord.js' },
+  { title: 'Creating Commands', url: '/docs/discord-js/commands', category: 'Discord.js' },
+  { title: 'Event Handling', url: '/docs/discord-js/events', category: 'Discord.js' },
+  { title: 'Database Integration', url: '/docs/discord-js/database', category: 'Discord.js' },
+  { title: 'REST API Basics', url: '/docs/api/basics', category: 'API' },
+  { title: 'Authentication', url: '/docs/api/authentication', category: 'API' },
+  { title: 'Rate Limits', url: '/docs/api/rate-limits', category: 'API' },
+  { title: 'Webhooks', url: '/docs/api/webhooks', category: 'API' },
+  { title: 'Hosting Your Bot', url: '/docs/deployment/hosting', category: 'Deployment' },
+  { title: 'Security Best Practices', url: '/docs/best-practices/security', category: 'Best Practices' },
+];
+
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchInput?.addEventListener('input', (e) => {
+  const query = (e.target as HTMLInputElement).value.toLowerCase();
+  
+  if (!query) {
+    searchResults?.classList.add('hidden');
+    return;
+  }
+
+  const filteredResults = searchData.filter(item => 
+    item.title.toLowerCase().includes(query) || 
+    item.category.toLowerCase().includes(query)
+  );
+
+  if (filteredResults.length > 0) {
+    searchResults?.classList.remove('hidden');
+    searchResults!.innerHTML = filteredResults
+      .map(result => `
+        <a 
+          href="${result.url}" 
+          class="block px-4 py-3 hover:bg-[#1E1F22] transition-colors"
+        >
+          <span class="text-sm text-[#5865F2]">${result.category}</span>
+          <p class="text-white">${result.title}</p>
+        </a>
+      `)
+      .join('');
+  } else {
+    searchResults!.innerHTML = `
+      <div class="px-4 py-3 text-gray-400">
+        No results found for "${query}"
+      </div>
+    `;
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!searchInput?.contains(e.target as Node)) {
+    searchResults?.classList.add('hidden');
+  }
+});
+</script>
