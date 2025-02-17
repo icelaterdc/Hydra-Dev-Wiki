@@ -1,0 +1,154 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'CI/CD Pipeline Setup',
+    content: `
+      Set up a continuous integration and deployment pipeline:
+      
+      1. **Version Control**
+         - Use Git for source control
+         - Follow branching strategy
+         - Implement code review process
+      
+      2. **Automated Testing**
+         - Unit tests
+         - Integration tests
+         - End-to-end tests
+      
+      3. **Deployment Automation**
+         - Automated builds
+         - Environment configuration
+         - Deployment scripts
+    `
+  },
+  {
+    title: 'GitHub Actions Example',
+    content: `
+      Example GitHub Actions workflow:
+
+      \`\`\`yaml
+      name: Discord Bot CI/CD
+
+      on:
+        push:
+          branches: [ main ]
+        pull_request:
+          branches: [ main ]
+
+      jobs:
+        test:
+          runs-on: ubuntu-latest
+          steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js
+              uses: actions/setup-node@v2
+              with:
+                node-version: '16.x'
+            - run: npm ci
+            - run: npm test
+
+        deploy:
+          needs: test
+          runs-on: ubuntu-latest
+          if: github.ref == 'refs/heads/main'
+          steps:
+            - uses: actions/checkout@v2
+            - name: Deploy to Production
+              env:
+                DEPLOY_KEY: \${{ secrets.DEPLOY_KEY }}
+              run: |
+                echo "\$DEPLOY_KEY" > deploy_key
+                chmod 600 deploy_key
+                ssh -i deploy_key user@host "cd /app && git pull && npm ci && pm2 restart bot"
+      \`\`\`
+    `
+  },
+  {
+    title: 'Testing Strategy',
+    content: `
+      Implement comprehensive testing:
+
+      \`\`\`javascript
+      // Command testing
+      describe('Ping Command', () => {
+        let client;
+        let interaction;
+
+        beforeEach(() => {
+          client = new Client();
+          interaction = {
+            commandName: 'ping',
+            reply: jest.fn()
+          };
+        });
+
+        test('should reply with pong', async () => {
+          await handlePingCommand(interaction);
+          expect(interaction.reply)
+            .toHaveBeenCalledWith('Pong!');
+        });
+      });
+
+      // Event testing
+      describe('Guild Member Add Event', () => {
+        test('should send welcome message', async () => {
+          const member = {
+            guild: {
+              systemChannel: {
+                send: jest.fn()
+              }
+            },
+            user: {
+              username: 'TestUser'
+            }
+          };
+
+          await handleGuildMemberAdd(member);
+          expect(member.guild.systemChannel.send)
+            .toHaveBeenCalledWith(
+              expect.stringContaining('TestUser')
+            );
+        });
+      });
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="CI/CD for Discord Bots">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">CI/CD Pipeline</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/deployment/monitoring" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Monitoring
+      </a>
+      <a 
+        href="/docs/deployment/hosting" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Back to Hosting →
+      </a>
+    </div>
+  </div>
+</Layout>

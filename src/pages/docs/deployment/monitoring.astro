@@ -1,0 +1,161 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Monitoring Basics',
+    content: `
+      Essential metrics to monitor:
+      
+      1. **System Metrics**
+         - CPU usage
+         - Memory usage
+         - Network traffic
+         - Disk usage
+      
+      2. **Bot Metrics**
+         - Command usage
+         - Response times
+         - Error rates
+         - Active servers
+    `
+  },
+  {
+    title: 'Implementing Monitoring',
+    content: `
+      Set up basic monitoring:
+
+      \`\`\`javascript
+      class BotMonitor {
+        constructor() {
+          this.metrics = {
+            commands: new Map(),
+            errors: [],
+            responseTime: []
+          };
+        }
+
+        trackCommand(command) {
+          const count = this.metrics.commands.get(command) || 0;
+          this.metrics.commands.set(command, count + 1);
+        }
+
+        trackError(error) {
+          this.metrics.errors.push({
+            timestamp: new Date(),
+            error: error.message,
+            stack: error.stack
+          });
+        }
+
+        trackResponseTime(ms) {
+          this.metrics.responseTime.push(ms);
+        }
+
+        getAverageResponseTime() {
+          const times = this.metrics.responseTime;
+          return times.reduce((a, b) => a + b, 0) / times.length;
+        }
+      }
+
+      // Usage
+      const monitor = new BotMonitor();
+
+      client.on('interactionCreate', async interaction => {
+        const start = Date.now();
+        try {
+          await handleCommand(interaction);
+          monitor.trackCommand(interaction.commandName);
+        } catch (error) {
+          monitor.trackError(error);
+        }
+        monitor.trackResponseTime(Date.now() - start);
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Alerting System',
+    content: `
+      Implement alerts for critical issues:
+
+      \`\`\`javascript
+      class AlertSystem {
+        constructor(webhook) {
+          this.webhook = webhook;
+          this.thresholds = {
+            responseTime: 1000, // 1 second
+            errorRate: 0.05, // 5%
+            memory: 0.9 // 90%
+          };
+        }
+
+        async checkMetrics(monitor) {
+          const alerts = [];
+
+          // Check response time
+          if (monitor.getAverageResponseTime() > this.thresholds.responseTime) {
+            alerts.push('High response time detected');
+          }
+
+          // Check error rate
+          const errorRate = monitor.metrics.errors.length / 
+            monitor.metrics.commands.size;
+          if (errorRate > this.thresholds.errorRate) {
+            alerts.push('High error rate detected');
+          }
+
+          // Send alerts
+          if (alerts.length > 0) {
+            await this.sendAlert(alerts.join('\\n'));
+          }
+        }
+
+        async sendAlert(message) {
+          await fetch(this.webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: message })
+          });
+        }
+      }
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Monitoring Your Discord Bot">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Monitoring Your Bot</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/deployment/scaling" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Scaling
+      </a>
+      <a 
+        href="/docs/deployment/ci-cd" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: CI/CD →
+      </a>
+    </div>
+  </div>
+</Layout>
