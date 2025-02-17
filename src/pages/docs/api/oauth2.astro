@@ -1,0 +1,163 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'OAuth2 Overview',
+    content: `
+      Discord's OAuth2 implementation allows you to:
+      
+      1. **Authenticate Users**
+         - Login with Discord
+         - Access user information
+         - Manage user permissions
+      
+      2. **Access Resources**
+         - Get user data
+         - Manage guilds
+         - Access bot features
+    `
+  },
+  {
+    title: 'Implementation',
+    content: `
+      Implementing OAuth2 authentication:
+
+      \`\`\`javascript
+      const express = require('express');
+      const fetch = require('node-fetch');
+      
+      const app = express();
+      
+      const CLIENT_ID = 'your-client-id';
+      const CLIENT_SECRET = 'your-client-secret';
+      const REDIRECT_URI = 'http://localhost:3000/callback';
+      
+      app.get('/login', (req, res) => {
+        const authUrl = \`https://discord.com/api/oauth2/authorize
+          ?client_id=\${CLIENT_ID}
+          &redirect_uri=\${encodeURIComponent(REDIRECT_URI)}
+          &response_type=code
+          &scope=identify%20guilds\`;
+        
+        res.redirect(authUrl);
+      });
+      
+      app.get('/callback', async (req, res) => {
+        const { code } = req.query;
+        
+        const tokenResponse = await fetch(
+          'https://discord.com/api/oauth2/token', 
+          {
+            method: 'POST',
+            body: new URLSearchParams({
+              client_id: CLIENT_ID,
+              client_secret: CLIENT_SECRET,
+              code,
+              grant_type: 'authorization_code',
+              redirect_uri: REDIRECT_URI,
+              scope: 'identify guilds',
+            }),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        );
+        
+        const tokens = await tokenResponse.json();
+        
+        // Get user data
+        const userResponse = await fetch(
+          'https://discord.com/api/users/@me',
+          {
+            headers: {
+              authorization: \`Bearer \${tokens.access_token}\`,
+            },
+          }
+        );
+        
+        const user = await userResponse.json();
+        
+        // Handle user data...
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Scopes and Permissions',
+    content: `
+      Available OAuth2 scopes:
+
+      - \`identify\`: Access user's username, discriminator, avatar
+      - \`email\`: Access user's email address
+      - \`guilds\`: List user's guilds
+      - \`guilds.join\`: Add user to guilds
+      - \`connections\`: Access user's connections
+      - \`bot\`: Add bot to servers
+
+      Example permission handling:
+
+      \`\`\`javascript
+      const REQUIRED_PERMISSIONS = [
+        'identify',
+        'guilds',
+        'email'
+      ];
+
+      function generateAuthUrl(clientId, redirectUri, scopes) {
+        const params = new URLSearchParams({
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          response_type: 'code',
+          scope: scopes.join(' ')
+        });
+
+        return \`https://discord.com/api/oauth2/authorize?\${params}\`;
+      }
+
+      // Usage
+      const authUrl = generateAuthUrl(
+        CLIENT_ID,
+        REDIRECT_URI,
+        REQUIRED_PERMISSIONS
+      );
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="OAuth2 Integration - Discord Developer Guide">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">OAuth2 Integration</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/api/webhooks" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Webhooks
+      </a>
+      <a 
+        href="/docs/api/basics" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Back to API Basics →
+      </a>
+    </div>
+  </div>
+</Layout>

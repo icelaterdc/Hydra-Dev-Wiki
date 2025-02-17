@@ -1,0 +1,96 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'What are Webhooks?',
+    content: `
+      Discord Webhooks provide a simple way to:
+      
+      - Send messages to channels
+      - Update messages
+      - Delete messages
+      
+      They're perfect for:
+      - Automated notifications
+      - Integration with external services
+      - Custom bot functionality
+    `
+  },
+  {
+    title: 'Creating Webhooks',
+    content: `
+      To create a webhook:
+
+      1. Server Settings > Integrations > Webhooks
+      2. Click "Create Webhook"
+      3. Set name and channel
+      4. Copy webhook URL
+
+      Or via API:
+      \`\`\`javascript
+      const webhook = await channel.createWebhook({
+        name: 'My Webhook',
+        avatar: 'https://i.imgur.com/example.png'
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Using Webhooks',
+    content: `
+      Send messages using webhooks:
+
+      \`\`\`javascript
+      // Using node-fetch
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: 'Hello from webhook!',
+          username: 'Custom Name',
+          avatar_url: 'https://i.imgur.com/example.png'
+        })
+      });
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Discord Webhooks Guide">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Discord Webhooks</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/api/authentication" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Authentication
+      </a>
+      <a 
+        href="/docs/api/oauth2" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: OAuth2 Integration →
+      </a>
+    </div>
+  </div>
+</Layout>

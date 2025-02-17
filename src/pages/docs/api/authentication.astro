@@ -1,0 +1,99 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Authentication Methods',
+    content: `
+      Discord API supports multiple authentication methods:
+      
+      1. **Bot Token Authentication**
+         - Used for bot applications
+         - Most common method
+         - Highest level of access
+      
+      2. **Bearer Token Authentication**
+         - Used for OAuth2 applications
+         - User-specific access
+         - Limited scope
+    `
+  },
+  {
+    title: 'Bot Token Security',
+    content: `
+      Securing your bot token is crucial:
+
+      \`\`\`javascript
+      // Load token from environment variables
+      require('dotenv').config();
+      const token = process.env.BOT_TOKEN;
+
+      // Initialize client with token
+      const client = new Client({
+        intents: [GatewayIntentBits.Guilds]
+      });
+
+      client.login(token);
+      \`\`\`
+
+      Never:
+      - Commit tokens to version control
+      - Share tokens publicly
+      - Include tokens in client-side code
+    `
+  },
+  {
+    title: 'OAuth2 Flow',
+    content: `
+      Implementing OAuth2 authentication:
+
+      \`\`\`javascript
+      const OAUTH2_REDIRECT_URI = 'http://localhost:3000/callback';
+      const OAUTH2_SCOPES = ['identify', 'guilds'];
+
+      // Generate OAuth2 URL
+      const authUrl = \`https://discord.com/api/oauth2/authorize
+        ?client_id=\${CLIENT_ID}
+        &redirect_uri=\${encodeURIComponent(OAUTH2_REDIRECT_URI)}
+        &response_type=code
+        &scope=\${OAUTH2_SCOPES.join('%20')}\`;
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Discord API Authentication Guide">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Authentication</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/api/basics" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: API Basics
+      </a>
+      <a 
+        href="/docs/api/webhooks" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Webhooks →
+      </a>
+    </div>
+  </div>
+</Layout>
