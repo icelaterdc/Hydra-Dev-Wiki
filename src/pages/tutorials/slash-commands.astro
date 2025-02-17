@@ -1,0 +1,183 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Understanding Slash Commands',
+    content: `
+      Slash commands are Discord's modern way of implementing bot commands:
+
+      - Built-in command suggestions
+      - Parameter validation
+      - Better user experience
+      - Improved security
+      - Automatic command documentation
+    `
+  },
+  {
+    title: 'Creating Slash Commands',
+    content: `
+      Here's how to create a basic slash command:
+
+      \`\`\`javascript
+      const { REST, Routes, SlashCommandBuilder } = require('discord.js');
+
+      // Create a command
+      const command = new SlashCommandBuilder()
+        .setName('greet')
+        .setDescription('Greets a user')
+        .addUserOption(option =>
+          option
+            .setName('user')
+            .setDescription('The user to greet')
+            .setRequired(true)
+        );
+
+      // Register commands
+      const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+
+      (async () => {
+        try {
+          console.log('Registering slash commands...');
+
+          await rest.put(
+            Routes.applicationCommands(process.env.CLIENT_ID),
+            { body: [command.toJSON()] }
+          );
+
+          console.log('Successfully registered slash commands!');
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+      \`\`\`
+    `
+  },
+  {
+    title: 'Handling Interactions',
+    content: `
+      Handle slash command interactions:
+
+      \`\`\`javascript
+      client.on('interactionCreate', async interaction => {
+        if (!interaction.isCommand()) return;
+
+        if (interaction.commandName === 'greet') {
+          const user = interaction.options.getUser('user');
+          
+          try {
+            await interaction.reply({
+              content: \`Hello, \${user.username}! 👋\`,
+              ephemeral: true
+            });
+          } catch (error) {
+            console.error(error);
+            await interaction.reply({
+              content: 'There was an error executing this command!',
+              ephemeral: true
+            });
+          }
+        }
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Advanced Command Features',
+    content: `
+      Enhance your commands with additional features:
+
+      \`\`\`javascript
+      const command = new SlashCommandBuilder()
+        .setName('role')
+        .setDescription('Manages user roles')
+        .addSubcommand(subcommand =>
+          subcommand
+            .setName('add')
+            .setDescription('Adds a role to a user')
+            .addUserOption(option =>
+              option
+                .setName('user')
+                .setDescription('The user to add the role to')
+                .setRequired(true)
+            )
+            .addRoleOption(option =>
+              option
+                .setName('role')
+                .setDescription('The role to add')
+                .setRequired(true)
+            )
+        )
+        .addSubcommand(subcommand =>
+          subcommand
+            .setName('remove')
+            .setDescription('Removes a role from a user')
+            .addUserOption(option =>
+              option
+                .setName('user')
+                .setDescription('The user to remove the role from')
+                .setRequired(true)
+            )
+            .addRoleOption(option =>
+              option
+                .setName('role')
+                .setDescription('The role to remove')
+                .setRequired(true)
+            )
+        );
+
+      // Handling subcommands
+      if (interaction.commandName === 'role') {
+        const subcommand = interaction.options.getSubcommand();
+        const user = interaction.options.getUser('user');
+        const role = interaction.options.getRole('role');
+        const member = interaction.guild.members.cache.get(user.id);
+
+        if (subcommand === 'add') {
+          await member.roles.add(role);
+          await interaction.reply(\`Added \${role.name} to \${user.username}\`);
+        } else if (subcommand === 'remove') {
+          await member.roles.remove(role);
+          await interaction.reply(\`Removed \${role.name} from \${user.username}\`);
+        }
+      }
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Implementing Slash Commands - Tutorial">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Implementing Slash Commands</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/tutorials/first-bot" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Your First Bot
+      </a>
+      <a 
+        href="/tutorials/event-handling" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Event Handling →
+      </a>
+    </div>
+  </div>
+</Layout>

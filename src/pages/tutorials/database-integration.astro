@@ -1,0 +1,205 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Choosing a Database',
+    content: `
+      Popular database options for Discord bots:
+
+      1. **SQLite**
+         - Simple setup
+         - No separate server needed
+         - Good for small bots
+         - Built-in with Node.js
+      
+      2. **MongoDB**
+         - Flexible schema
+         - Scalable
+         - Great for complex data
+         - Popular in Node.js ecosystem
+      
+      3. **PostgreSQL**
+         - Robust and reliable
+         - Advanced features
+         - Perfect for large bots
+         - Strong data integrity
+    `
+  },
+  {
+    title: 'Setting Up Database Connection',
+    content: `
+      Example using Prisma with PostgreSQL:
+
+      \`\`\`bash
+      npm install @prisma/client prisma
+      npx prisma init
+      \`\`\`
+
+      Create your schema (prisma/schema.prisma):
+
+      \`\`\`prisma
+      datasource db {
+        provider = "postgresql"
+        url      = env("DATABASE_URL")
+      }
+
+      model User {
+        id        String   @id
+        balance   Int      @default(0)
+        inventory Item[]
+        createdAt DateTime @default(now())
+      }
+
+      model Item {
+        id       String @id @default(cuid())
+        name     String
+        type     String
+        value    Int
+        userId   String
+        user     User   @relation(fields: [userId], references: [id])
+      }
+      \`\`\`
+
+      Initialize the client:
+
+      \`\`\`javascript
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      \`\`\`
+    `
+  },
+  {
+    title: 'Basic Database Operations',
+    content: `
+      Common database operations:
+
+      \`\`\`javascript
+      // Create a new user
+      async function createUser(userId) {
+        return await prisma.user.create({
+          data: {
+            id: userId,
+            balance: 100 // Starting balance
+          }
+        });
+      }
+
+      // Update user balance
+      async function updateBalance(userId, amount) {
+        return await prisma.user.update({
+          where: { id: userId },
+          data: { 
+            balance: { increment: amount } 
+          }
+        });
+      }
+
+      // Add item to inventory
+      async function addItem(userId, itemData) {
+        return await prisma.item.create({
+          data: {
+            ...itemData,
+            user: { connect: { id: userId } }
+          }
+        });
+      }
+
+      // Get user with inventory
+      async function getUser(userId) {
+        return await prisma.user.findUnique({
+          where: { id: userId },
+          include: { inventory: true }
+        });
+      }
+      \`\`\`
+    `
+  },
+  {
+    title: 'Implementing Commands with Database',
+    content: `
+      Create commands that use the database:
+
+      \`\`\`javascript
+      client.on('interactionCreate', async interaction => {
+        if (!interaction.isCommand()) return;
+
+        try {
+          switch (interaction.commandName) {
+            case 'balance':
+              const user = await getUser(interaction.user.id);
+              await interaction.reply(
+                \`Your balance: 💰 \${user.balance} coins\`
+              );
+              break;
+
+            case 'daily':
+              await updateBalance(interaction.user.id, 100);
+              await interaction.reply(
+                'You received 💰 100 daily coins!'
+              );
+              break;
+
+            case 'inventory':
+              const userData = await getUser(interaction.user.id);
+              const items = userData.inventory.map(
+                item => \`\${item.name} (Value: \${item.value})\`
+              );
+              
+              await interaction.reply({
+                embeds: [{
+                  title: 'Your Inventory',
+                  description: items.join('\\n') || 'Empty',
+                  color: 0x5865F2
+                }]
+              });
+              break;
+          }
+        } catch (error) {
+          console.error(error);
+          await interaction.reply({
+            content: 'There was an error executing this command!',
+            ephemeral: true
+          });
+        }
+      });
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Database Integration - Discord Bot Tutorial">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Database Integration</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/tutorials/event-handling" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Event Handling
+      </a>
+      <a 
+        href="/tutorials" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Back to Tutorials →
+      </a>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,63 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const tutorials = [
+  {
+    title: 'Creating Your First Discord Bot',
+    description: 'Learn how to create and set up your first Discord bot from scratch.',
+    difficulty: 'Beginner',
+    duration: '30 minutes',
+    link: '/tutorials/first-bot'
+  },
+  {
+    title: 'Implementing Slash Commands',
+    description: 'Master Discord\'s slash command system and create interactive bot commands.',
+    difficulty: 'Intermediate',
+    duration: '45 minutes',
+    link: '/tutorials/slash-commands'
+  },
+  {
+    title: 'Event Handling',
+    description: 'Learn how to handle various Discord events effectively in your bot.',
+    difficulty: 'Intermediate',
+    duration: '40 minutes',
+    link: '/tutorials/event-handling'
+  },
+  {
+    title: 'Database Integration',
+    description: 'Learn how to integrate and manage databases in your Discord bot.',
+    difficulty: 'Advanced',
+    duration: '60 minutes',
+    link: '/tutorials/database-integration'
+  }
+];
+---
+
+<Layout title="Discord Bot Development Tutorials">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Tutorials</h1>
+    
+    <div class="grid gap-8">
+      {tutorials.map(tutorial => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-2xl font-semibold mb-2">{tutorial.title}</h2>
+              <p class="text-gray-300 mb-4">{tutorial.description}</p>
+              <div class="flex gap-4 text-sm">
+                <span class="bg-[#5865F2] px-3 py-1 rounded-full">{tutorial.difficulty}</span>
+                <span class="bg-[#4F545C] px-3 py-1 rounded-full">{tutorial.duration}</span>
+              </div>
+            </div>
+            <a 
+              href={tutorial.link}
+              class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+            >
+              Start Tutorial →
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

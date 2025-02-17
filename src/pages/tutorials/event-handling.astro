@@ -1,0 +1,229 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Understanding Discord Events',
+    content: `
+      Discord.js provides various events you can listen to:
+
+      1. **Client Events**
+         - ready
+         - error
+         - warn
+         - debug
+
+      2. **Guild Events**
+         - guildCreate
+         - guildDelete
+         - guildUpdate
+         - guildMemberAdd
+         - guildMemberRemove
+
+      3. **Message Events**
+         - messageCreate
+         - messageUpdate
+         - messageDelete
+         - messageReactionAdd
+         - messageReactionRemove
+
+      4. **Interaction Events**
+         - interactionCreate
+         - For buttons, select menus, modals, etc.
+    `
+  },
+  {
+    title: 'Basic Event Handling',
+    content: `
+      Here's how to handle basic Discord events:
+
+      \`\`\`javascript
+      // Ready event
+      client.once('ready', () => {
+        console.log(\`Logged in as \${client.user.tag}\`);
+        console.log(\`Serving \${client.guilds.cache.size} guilds\`);
+      });
+
+      // Guild member events
+      client.on('guildMemberAdd', member => {
+        const channel = member.guild.systemChannel;
+        if (channel) {
+          channel.send(
+            \`Welcome to the server, \${member}! 👋\`
+          );
+        }
+      });
+
+      // Message events
+      client.on('messageCreate', message => {
+        if (message.author.bot) return;
+        
+        if (message.content === '!ping') {
+          message.reply(\`🏓 Pong! Latency: \${client.ws.ping}ms\`);
+        }
+      });
+
+      // Error handling
+      client.on('error', error => {
+        console.error('Discord client error:', error);
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Advanced Event Patterns',
+    content: `
+      Implement a robust event handling system:
+
+      \`\`\`javascript
+      class EventHandler {
+        constructor(client) {
+          this.client = client;
+          this.events = new Map();
+        }
+
+        register(eventName, handler) {
+          if (!this.events.has(eventName)) {
+            this.events.set(eventName, []);
+          }
+          
+          this.events.get(eventName).push(handler);
+          
+          this.client.on(eventName, async (...args) => {
+            try {
+              await handler(...args);
+            } catch (error) {
+              console.error(
+                \`Error in \${eventName} handler:\`,
+                error
+              );
+            }
+          });
+        }
+
+        unregister(eventName, handler) {
+          const handlers = this.events.get(eventName);
+          if (handlers) {
+            const index = handlers.indexOf(handler);
+            if (index > -1) {
+              handlers.splice(index, 1);
+            }
+          }
+        }
+      }
+
+      // Usage example
+      const eventHandler = new EventHandler(client);
+
+      // Register message handler
+      eventHandler.register('messageCreate', async message => {
+        if (message.author.bot) return;
+        // Handle message
+      });
+
+      // Register member join handler
+      eventHandler.register('guildMemberAdd', async member => {
+        // Welcome new member
+      });
+
+      // Register interaction handler
+      eventHandler.register('interactionCreate', async interaction => {
+        if (!interaction.isCommand()) return;
+        // Handle command interaction
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Event Middleware',
+    content: `
+      Create middleware for event processing:
+
+      \`\`\`javascript
+      class EventMiddleware {
+        constructor() {
+          this.middlewares = [];
+        }
+
+        use(fn) {
+          this.middlewares.push(fn);
+          return this;
+        }
+
+        async execute(event, ...args) {
+          let index = 0;
+
+          const next = async () => {
+            if (index >= this.middlewares.length) return;
+
+            const middleware = this.middlewares[index++];
+            await middleware(event, ...args, next);
+          };
+
+          await next();
+        }
+      }
+
+      // Usage example
+      const middleware = new EventMiddleware();
+
+      // Logging middleware
+      middleware.use(async (event, ...args, next) => {
+        console.log(\`Event \${event} triggered\`);
+        await next();
+      });
+
+      // Rate limiting middleware
+      middleware.use(async (event, message, next) => {
+        if (event === 'messageCreate') {
+          const key = \`\${message.author.id}:\${message.guild.id}\`;
+          if (isRateLimited(key)) return;
+          setRateLimit(key);
+        }
+        await next();
+      });
+
+      // Apply middleware to events
+      client.on('messageCreate', async message => {
+        await middleware.execute('messageCreate', message);
+      });
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Event Handling in Discord.js - Tutorial">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Event Handling in Discord.js</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/tutorials/slash-commands" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Slash Commands
+      </a>
+      <a 
+        href="/tutorials/database-integration" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Database Integration →
+      </a>
+    </div>
+  </div>
+</Layout>
