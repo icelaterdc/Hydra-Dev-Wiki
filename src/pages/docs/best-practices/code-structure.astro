@@ -1,0 +1,152 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Project Organization',
+    content: `
+      Organize your Discord bot project:
+      
+      \`\`\`
+      project/
+      ├── src/
+      │   ├── commands/
+      │   │   ├── moderation/
+      │   │   ├── music/
+      │   │   └── utility/
+      │   ├── events/
+      │   ├── database/
+      │   ├── utils/
+      │   └── index.js
+      ├── config/
+      ├── tests/
+      └── package.json
+      \`\`\`
+
+      Keep your code organized and maintainable with a clear structure.
+    `
+  },
+  {
+    title: 'Command Handler',
+    content: `
+      Implement a dynamic command handler:
+
+      \`\`\`javascript
+      class CommandHandler {
+        constructor(client) {
+          this.client = client;
+          this.commands = new Collection();
+        }
+
+        async loadCommands() {
+          const commandFiles = await glob('src/commands/**/*.js');
+          
+          for (const file of commandFiles) {
+            const command = require(file);
+            if (command.data && command.execute) {
+              this.commands.set(command.data.name, command);
+            }
+          }
+        }
+
+        async handleInteraction(interaction) {
+          if (!interaction.isCommand()) return;
+
+          const command = this.commands.get(interaction.commandName);
+          if (!command) return;
+
+          try {
+            await command.execute(interaction);
+          } catch (error) {
+            console.error(error);
+            await interaction.reply({
+              content: 'Error executing command!',
+              ephemeral: true
+            });
+          }
+        }
+      }
+      \`\`\`
+    `
+  },
+  {
+    title: 'Event Handler',
+    content: `
+      Create a modular event system:
+
+      \`\`\`javascript
+      class EventHandler {
+        constructor(client) {
+          this.client = client;
+          this.events = new Collection();
+        }
+
+        async loadEvents() {
+          const eventFiles = await glob('src/events/**/*.js');
+          
+          for (const file of eventFiles) {
+            const event = require(file);
+            if (event.name && event.execute) {
+              this.events.set(event.name, event);
+              
+              if (event.once) {
+                this.client.once(event.name, (...args) => 
+                  event.execute(...args));
+              } else {
+                this.client.on(event.name, (...args) => 
+                  event.execute(...args));
+              }
+            }
+          }
+        }
+      }
+
+      // Example event file
+      module.exports = {
+        name: 'messageCreate',
+        once: false,
+        async execute(message) {
+          if (message.author.bot) return;
+          // Handle message
+        }
+      };
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Code Structure Best Practices">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Code Structure</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/best-practices/performance" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Performance
+      </a>
+      <a 
+        href="/docs/best-practices/error-handling" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Error Handling →
+      </a>
+    </div>
+  </div>
+</Layout>

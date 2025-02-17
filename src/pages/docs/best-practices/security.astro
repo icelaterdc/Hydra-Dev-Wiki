@@ -1,0 +1,112 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Token Security',
+    content: `
+      Protect your bot token:
+      
+      1. **Never commit tokens to version control**
+         - Use environment variables
+         - Keep tokens in secure storage
+      
+      2. **Rotate tokens regularly**
+         - After potential exposure
+         - When team members leave
+         - On regular intervals
+      
+      3. **Use secure storage**
+         - Environment variables
+         - Secret management services
+         - Encrypted configuration
+    `
+  },
+  {
+    title: 'Permission Management',
+    content: `
+      Implement proper permission handling:
+
+      \`\`\`javascript
+      // Check for required permissions
+      if (!interaction.member.permissions.has('BanMembers')) {
+        return interaction.reply({
+          content: 'You do not have permission to use this command.',
+          ephemeral: true
+        });
+      }
+
+      // Use permission flags
+      const requiredPermissions = [
+        PermissionFlagsBits.BanMembers,
+        PermissionFlagsBits.KickMembers
+      ];
+
+      if (!interaction.guild.members.me.permissions.has(requiredPermissions)) {
+        return interaction.reply({
+          content: 'I do not have the required permissions.',
+          ephemeral: true
+        });
+      }
+      \`\`\`
+    `
+  },
+  {
+    title: 'Input Validation',
+    content: `
+      Always validate user input:
+
+      \`\`\`javascript
+      // Validate command input
+      if (amount < 0 || amount > 100) {
+        return interaction.reply({
+          content: 'Amount must be between 0 and 100',
+          ephemeral: true
+        });
+      }
+
+      // Sanitize user input
+      const sanitizedInput = input
+        .replace(/[<>]/g, '')
+        .trim()
+        .slice(0, 1000);
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Discord Bot Security Best Practices">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Security Best Practices</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/best-practices" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Back to Best Practices
+      </a>
+      <a 
+        href="/docs/best-practices/performance" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Performance Optimization →
+      </a>
+    </div>
+  </div>
+</Layout>

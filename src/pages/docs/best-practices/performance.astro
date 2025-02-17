@@ -1,0 +1,144 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Resource Management',
+    content: `
+      Optimize your bot's resource usage:
+      
+      1. **Memory Management**
+         - Use caching wisely
+         - Clear unused resources
+         - Monitor memory leaks
+         - Implement garbage collection
+      
+      2. **CPU Optimization**
+         - Optimize heavy operations
+         - Use worker threads
+         - Implement rate limiting
+         - Batch processing
+    `
+  },
+  {
+    title: 'Caching Strategies',
+    content: `
+      Implement efficient caching:
+
+      \`\`\`javascript
+      class CacheManager {
+        constructor(options = {}) {
+          this.cache = new Map();
+          this.ttl = options.ttl || 3600000; // 1 hour default
+          this.maxSize = options.maxSize || 1000;
+        }
+
+        set(key, value) {
+          if (this.cache.size >= this.maxSize) {
+            this.clearOldest();
+          }
+
+          this.cache.set(key, {
+            value,
+            timestamp: Date.now()
+          });
+        }
+
+        get(key) {
+          const item = this.cache.get(key);
+          if (!item) return null;
+
+          if (Date.now() - item.timestamp > this.ttl) {
+            this.cache.delete(key);
+            return null;
+          }
+
+          return item.value;
+        }
+
+        clearOldest() {
+          const oldest = [...this.cache.entries()]
+            .sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+          if (oldest) {
+            this.cache.delete(oldest[0]);
+          }
+        }
+      }
+      \`\`\`
+    `
+  },
+  {
+    title: 'Database Optimization',
+    content: `
+      Optimize database operations:
+
+      \`\`\`javascript
+      // Implement connection pooling
+      const pool = new Pool({
+        max: 20,
+        min: 5,
+        idle: 10000
+      });
+
+      // Batch operations
+      async function batchUpdate(records) {
+        const batchSize = 100;
+        const batches = [];
+        
+        for (let i = 0; i < records.length; i += batchSize) {
+          batches.push(records.slice(i, i + batchSize));
+        }
+
+        return Promise.all(batches.map(batch => 
+          pool.query(
+            'INSERT INTO table (col1, col2) VALUES ?',
+            [batch.map(r => [r.val1, r.val2])]
+          )
+        ));
+      }
+
+      // Index optimization
+      const optimizeIndexes = \`
+        CREATE INDEX IF NOT EXISTS idx_user_id ON users(user_id);
+        CREATE INDEX IF NOT EXISTS idx_guild_id ON guilds(guild_id);
+      \`;
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Performance Optimization for Discord Bots">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Performance Optimization</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/best-practices/security" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Security
+      </a>
+      <a 
+        href="/docs/best-practices/code-structure" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Code Structure →
+      </a>
+    </div>
+  </div>
+</Layout>
