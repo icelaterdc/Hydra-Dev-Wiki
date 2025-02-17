@@ -1,0 +1,156 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Database Integration',
+    content: `
+      Choose the right database for your bot:
+      
+      1. **SQL Databases**
+         - PostgreSQL
+         - MySQL
+         - SQLite
+      
+      2. **NoSQL Databases**
+         - MongoDB
+         - Redis
+         - Firebase
+      
+      3. **Considerations**
+         - Scalability needs
+         - Data structure
+         - Hosting requirements
+    `
+  },
+  {
+    title: 'Setting Up Database',
+    content: `
+      Example using Prisma with PostgreSQL:
+
+      \`\`\`javascript
+      // schema.prisma
+      datasource db {
+        provider = "postgresql"
+        url      = env("DATABASE_URL")
+      }
+
+      model User {
+        id        String   @id
+        balance   Int      @default(0)
+        inventory String[]
+        createdAt DateTime @default(now())
+      }
+
+      // Database client setup
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+
+      // Example usage
+      async function createUser(userId) {
+        return await prisma.user.create({
+          data: {
+            id: userId,
+            balance: 100
+          }
+        });
+      }
+
+      async function updateBalance(userId, amount) {
+        return await prisma.user.update({
+          where: { id: userId },
+          data: { 
+            balance: { increment: amount } 
+          }
+        });
+      }
+      \`\`\`
+    `
+  },
+  {
+    title: 'Data Models',
+    content: `
+      Design your data models:
+
+      \`\`\`javascript
+      // Example models for a gaming bot
+      model User {
+        id        String    @id
+        balance   Int       @default(0)
+        inventory Item[]
+        cooldowns Cooldown?
+      }
+
+      model Item {
+        id       String @id @default(cuid())
+        name     String
+        type     String
+        value    Int
+        userId   String
+        user     User   @relation(fields: [userId], references: [id])
+      }
+
+      model Cooldown {
+        userId     String   @id
+        user       User     @relation(fields: [userId], references: [id])
+        daily      DateTime?
+        work       DateTime?
+        adventure  DateTime?
+      }
+
+      // Usage example
+      async function getInventory(userId) {
+        return await prisma.user.findUnique({
+          where: { id: userId },
+          include: { inventory: true }
+        });
+      }
+
+      async function addItem(userId, itemData) {
+        return await prisma.item.create({
+          data: {
+            ...itemData,
+            user: { connect: { id: userId } }
+          }
+        });
+      }
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Database Integration in Discord.js">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Database Integration</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/discord-js/events" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Events
+      </a>
+      <a 
+        href="/docs/discord-js/getting-started" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Back to Getting Started →
+      </a>
+    </div>
+  </div>
+</Layout>

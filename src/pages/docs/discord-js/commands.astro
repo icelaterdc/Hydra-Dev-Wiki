@@ -1,0 +1,130 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Understanding Discord Commands',
+    content: `
+      Discord bots can respond to commands in two ways:
+      
+      1. **Slash Commands** - Modern, integrated commands that appear in Discord's UI
+      2. **Message Commands** - Traditional text-based commands that respond to messages
+
+      We recommend using Slash Commands for new bots as they provide better user experience and integration with Discord.
+    `
+  },
+  {
+    title: 'Creating Slash Commands',
+    content: `
+      Here's how to create a basic slash command:
+
+      \`\`\`javascript
+      const { SlashCommandBuilder } = require('discord.js');
+
+      const pingCommand = new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Replies with Pong!');
+
+      client.on('interactionCreate', async interaction => {
+        if (!interaction.isCommand()) return;
+
+        if (interaction.commandName === 'ping') {
+          await interaction.reply('Pong!');
+        }
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Command Options',
+    content: `
+      Slash commands can have various options:
+
+      \`\`\`javascript
+      const greetCommand = new SlashCommandBuilder()
+        .setName('greet')
+        .setDescription('Greets a user')
+        .addUserOption(option =>
+          option
+            .setName('user')
+            .setDescription('The user to greet')
+            .setRequired(true)
+        );
+
+      client.on('interactionCreate', async interaction => {
+        if (!interaction.isCommand()) return;
+
+        if (interaction.commandName === 'greet') {
+          const user = interaction.options.getUser('user');
+          await interaction.reply(\`Hello, \${user.username}!\`);
+        }
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Registering Commands',
+    content: `
+      After creating commands, you need to register them with Discord:
+
+      \`\`\`javascript
+      const { REST, Routes } = require('discord.js');
+
+      const commands = [
+        pingCommand.toJSON(),
+        greetCommand.toJSON()
+      ];
+
+      const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+
+      (async () => {
+        try {
+          await rest.put(
+            Routes.applicationCommands(CLIENT_ID),
+            { body: commands }
+          );
+          console.log('Commands registered successfully!');
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Creating Commands - Discord.js Guide">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Creating Commands with Discord.js</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/discord-js/getting-started" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Getting Started
+      </a>
+      <a 
+        href="/docs/discord-js/events" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Event Handling →
+      </a>
+    </div>
+  </div>
+</Layout>

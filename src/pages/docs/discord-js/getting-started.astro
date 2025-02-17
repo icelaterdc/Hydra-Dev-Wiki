@@ -1,0 +1,120 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Prerequisites',
+    content: `
+      Before you begin, make sure you have:
+      
+      - Node.js v16.9.0 or higher installed
+      - A code editor (VS Code recommended)
+      - Basic JavaScript knowledge
+      - A Discord account
+    `
+  },
+  {
+    title: 'Creating a Discord Application',
+    content: `
+      1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+      2. Click "New Application"
+      3. Give your application a name
+      4. Navigate to the "Bot" section
+      5. Click "Add Bot"
+      6. Copy your bot token (keep it secure!)
+    `
+  },
+  {
+    title: 'Setting Up Your Project',
+    content: `
+      Create a new Node.js project:
+
+      \`\`\`bash
+      mkdir my-discord-bot
+      cd my-discord-bot
+      npm init -y
+      npm install discord.js
+      \`\`\`
+
+      Create your main bot file (index.js):
+
+      \`\`\`javascript
+      const { Client, GatewayIntentBits } = require('discord.js');
+
+      const client = new Client({
+        intents: [
+          GatewayIntentBits.Guilds,
+          GatewayIntentBits.GuildMessages,
+          GatewayIntentBits.MessageContent
+        ]
+      });
+
+      client.once('ready', () => {
+        console.log(\`Logged in as \${client.user.tag}\`);
+      });
+
+      client.on('messageCreate', message => {
+        if (message.content === '!ping') {
+          message.reply('Pong!');
+        }
+      });
+
+      client.login('your-token-here');
+      \`\`\`
+    `
+  },
+  {
+    title: 'Running Your Bot',
+    content: `
+      1. Save your bot token in a .env file:
+      
+      \`\`\`bash
+      TOKEN=your-token-here
+      \`\`\`
+
+      2. Run your bot:
+
+      \`\`\`bash
+      node index.js
+      \`\`\`
+
+      Your bot should now be online and responding to the !ping command!
+    `
+  }
+];
+---
+
+<Layout title="Getting Started with Discord.js">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Getting Started with Discord.js</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/getting-started" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Back to Overview
+      </a>
+      <a 
+        href="/docs/discord-js/commands" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Creating Commands →
+      </a>
+    </div>
+  </div>
+</Layout>

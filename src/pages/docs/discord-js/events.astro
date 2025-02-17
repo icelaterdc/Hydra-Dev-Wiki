@@ -1,0 +1,142 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Event System Overview',
+    content: `
+      Discord.js provides a robust event system:
+      
+      1. **Client Events**
+         - ready
+         - messageCreate
+         - interactionCreate
+         - guildMemberAdd
+         - And many more...
+      
+      2. **Event Handling**
+         - Event listeners
+         - Event emitters
+         - Async event handling
+    `
+  },
+  {
+    title: 'Basic Event Handling',
+    content: `
+      Handle basic Discord events:
+
+      \`\`\`javascript
+      client.on('ready', () => {
+        console.log(\`Logged in as \${client.user.tag}\`);
+      });
+
+      client.on('messageCreate', message => {
+        if (message.author.bot) return;
+        
+        if (message.content === '!ping') {
+          message.reply('Pong!');
+        }
+      });
+
+      client.on('interactionCreate', async interaction => {
+        if (!interaction.isCommand()) return;
+
+        if (interaction.commandName === 'hello') {
+          await interaction.reply('Hello!');
+        }
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Advanced Event Patterns',
+    content: `
+      Implement advanced event handling:
+
+      \`\`\`javascript
+      class EventManager {
+        constructor(client) {
+          this.client = client;
+          this.events = new Map();
+        }
+
+        register(eventName, handler) {
+          if (!this.events.has(eventName)) {
+            this.events.set(eventName, []);
+          }
+          
+          this.events.get(eventName).push(handler);
+          
+          this.client.on(eventName, async (...args) => {
+            try {
+              await handler(...args);
+            } catch (error) {
+              console.error(
+                \`Error in \${eventName} handler:\`,
+                error
+              );
+            }
+          });
+        }
+
+        unregister(eventName, handler) {
+          const handlers = this.events.get(eventName);
+          if (handlers) {
+            const index = handlers.indexOf(handler);
+            if (index > -1) {
+              handlers.splice(index, 1);
+            }
+          }
+        }
+      }
+
+      // Usage
+      const eventManager = new EventManager(client);
+
+      eventManager.register('messageCreate', async message => {
+        // Handle message
+      });
+
+      eventManager.register('guildMemberAdd', async member => {
+        // Welcome new member
+      });
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Event Handling in Discord.js">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Event Handling</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/docs/discord-js/commands" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Previous: Commands
+      </a>
+      <a 
+        href="/docs/discord-js/database" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Next: Database Integration →
+      </a>
+    </div>
+  </div>
+</Layout>
