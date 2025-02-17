@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Code Structure',
+    content: `
+      Learn how to organize your Discord bot code:
+      
+      - Project structure best practices
+      - Command handling patterns
+      - Event organization
+      - Modular design principles
+    `,
+    link: '/docs/best-practices/code-structure'
+  },
+  {
+    title: 'Security',
+    content: `
+      Keep your bot and users safe:
+      
+      - Token security
+      - Permission management
+      - Input validation
+      - Rate limit handling
+    `,
+    link: '/docs/best-practices/security'
+  },
+  {
+    title: 'Performance',
+    content: `
+      Optimize your bot's performance:
+      
+      - Caching strategies
+      - Resource management
+      - Database optimization
+      - Memory usage
+    `,
+    link: '/docs/best-practices/performance'
+  }
+];
+---
+
+<Layout title="Best Practices - Discord Developer Guide">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Discord Development Best Practices</h1>
+    
+    <div class="space-y-8">
+      {sections.map(section => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">{section.title}</h2>
+          <div class="prose prose-invert max-w-none mb-4">
+            {section.content}
+          </div>
+          <a 
+            href={section.link}
+            class="inline-block bg-[#5865F2] hover:bg-[#4752C4] px-4 py-2 rounded-md font-medium transition-colors"
+          >
+            Learn More →
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

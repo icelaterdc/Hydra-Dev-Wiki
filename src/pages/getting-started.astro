@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const steps = [
+  {
+    title: 'Setting Up Your Development Environment',
+    content: `
+      Before you start developing Discord bots, you'll need to set up your development environment:
+      
+      1. Install Node.js (version 16.9.0 or higher)
+      2. Set up a code editor (we recommend Visual Studio Code)
+      3. Create a Discord account and access the Developer Portal
+      4. Create a new application in the Discord Developer Portal
+    `,
+    link: '/docs/discord-js/getting-started'
+  },
+  {
+    title: 'Creating Your First Bot',
+    content: `
+      Let's create a basic Discord bot:
+
+      1. Create a new Discord application
+      2. Add a bot user to your application
+      3. Get your bot token
+      4. Set up a new Node.js project
+      5. Install discord.js
+      6. Write your first bot code
+    `,
+    link: '/tutorials/first-bot'
+  },
+  {
+    title: 'Next Steps',
+    content: `
+      After creating your first bot, explore these topics:
+
+      1. Implementing slash commands
+      2. Handling events
+      3. Database integration
+      4. Deployment and hosting
+
+      Choose your learning path based on your needs and interests.
+    `,
+    link: '/content'
+  }
+];
+---
+
+<Layout title="Getting Started - Discord Bot Development">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Getting Started with Discord Bot Development</h1>
+    
+    <div class="space-y-12">
+      {steps.map((step, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {step.title}
+          </h2>
+          <div class="prose prose-invert max-w-none mb-4">
+            {step.content}
+          </div>
+          <a 
+            href={step.link}
+            class="inline-block bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+          >
+            Continue →
+          </a>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-12 bg-[#2B2D31] p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4">Ready to Explore More?</h2>
+      <p class="text-gray-300 mb-6">
+        Once you've completed the getting started guide, you can:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a 
+          href="/bot-development"
+          class="bg-[#1E1F22] hover:bg-[#2B2D31] p-4 rounded-lg text-center transition-colors"
+        >
+          Bot Development
+        </a>
+        <a 
+          href="/api-integration"
+          class="bg-[#1E1F22] hover:bg-[#2B2D31] p-4 rounded-lg text-center transition-colors"
+        >
+          API Integration
+        </a>
+        <a 
+          href="/best-practices"
+          class="bg-[#1E1F22] hover:bg-[#2B2D31] p-4 rounded-lg text-center transition-colors"
+        >
+          Best Practices
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

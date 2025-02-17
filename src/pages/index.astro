@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Discord Developer Wiki - Learn Bot Development">
+  <section class="text-center py-16 px-4">
+    <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-[#5865F2] to-[#57F287] text-transparent bg-clip-text">
+      Discord Developer Wiki
+    </h1>
+    <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
+      Your comprehensive guide to Discord bot development, API integration, and best practices.
+    </p>
+    <div class="flex justify-center gap-4">
+      <a 
+        href="/getting-started" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        Get Started
+      </a>
+      <a 
+        href="/examples" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        View Examples
+      </a>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+    <div class="bg-[#2B2D31] p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4">Bot Development</h2>
+      <p class="text-gray-300 mb-4">Learn how to create, host, and maintain Discord bots using modern best practices.</p>
+      <a href="/bot-development" class="text-[#5865F2] hover:underline">Learn more →</a>
+    </div>
+    <div class="bg-[#2B2D31] p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4">API Integration</h2>
+      <p class="text-gray-300 mb-4">Master Discord's API with comprehensive guides and real-world examples.</p>
+      <a href="/api-integration" class="text-[#5865F2] hover:underline">Learn more →</a>
+    </div>
+    <div class="bg-[#2B2D31] p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4">Best Practices</h2>
+      <p class="text-gray-300 mb-4">Follow industry standards and optimize your Discord development workflow.</p>
+      <a href="/best-practices" class="text-[#5865F2] hover:underline">Learn more →</a>
+    </div>
+  </section>
+
+  <section class="mt-16">
+    <h2 class="text-3xl font-bold mb-8">Latest Tutorials</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <article class="bg-[#2B2D31] p-6 rounded-lg">
+        <span class="text-[#57F287] text-sm">Beginner</span>
+        <h3 class="text-xl font-semibold mt-2 mb-4">Creating Your First Discord Bot</h3>
+        <p class="text-gray-300 mb-4">Learn the basics of setting up and creating a Discord bot using Discord.js.</p>
+        <a href="/tutorials/first-bot" class="text-[#5865F2] hover:underline">Read tutorial →</a>
+      </article>
+      <article class="bg-[#2B2D31] p-6 rounded-lg">
+        <span class="text-[#57F287] text-sm">Intermediate</span>
+        <h3 class="text-xl font-semibold mt-2 mb-4">Implementing Slash Commands</h3>
+        <p class="text-gray-300 mb-4">Master Discord's slash commands system and create interactive bot commands.</p>
+        <a href="/tutorials/slash-commands" class="text-[#5865F2] hover:underline">Read tutorial →</a>
+      </article>
+    </div>
+  </section>
+</Layout>

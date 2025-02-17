@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const examples = [
+  {
+    title: 'Basic Bot Template',
+    description: 'A simple Discord bot template with command handling and event system.',
+    features: [
+      'Command handler',
+      'Event system',
+      'Basic configuration',
+      'Error handling'
+    ],
+    link: 'https://github.com/example/discord-bot-template'
+  },
+  {
+    title: 'Music Bot',
+    description: 'A feature-rich music bot with queue system and audio controls.',
+    features: [
+      'Play music from YouTube',
+      'Queue management',
+      'Audio controls',
+      'Playlist support'
+    ],
+    link: 'https://github.com/example/discord-music-bot'
+  },
+  {
+    title: 'Moderation Bot',
+    description: 'Advanced moderation bot with logging and auto-moderation features.',
+    features: [
+      'User management',
+      'Auto-moderation',
+      'Logging system',
+      'Warning system'
+    ],
+    link: 'https://github.com/example/discord-mod-bot'
+  }
+];
+---
+
+<Layout title="Discord Bot Examples">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Example Projects</h1>
+    
+    <div class="grid gap-8">
+      {examples.map(example => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-2">{example.title}</h2>
+          <p class="text-gray-300 mb-4">{example.description}</p>
+          <div class="mb-4">
+            <h3 class="text-lg font-medium mb-2">Features:</h3>
+            <ul class="list-disc list-inside text-gray-300">
+              {example.features.map(feature => (
+                <li>{feature}</li>
+              ))}
+            </ul>
+          </div>
+          <a 
+            href={example.link}
+            class="inline-block bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Project →
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

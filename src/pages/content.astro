@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Search from '../components/Search.astro';
+
+const categories = [
+  {
+    title: 'Discord.js',
+    description: 'Learn how to build bots with Discord.js',
+    links: [
+      { title: 'Getting Started', url: '/docs/discord-js/getting-started' },
+      { title: 'Creating Commands', url: '/docs/discord-js/commands' },
+      { title: 'Event Handling', url: '/docs/discord-js/events' },
+      { title: 'Database Integration', url: '/docs/discord-js/database' },
+    ]
+  },
+  {
+    title: 'API Integration',
+    description: 'Master Discord\'s REST API',
+    links: [
+      { title: 'REST API Basics', url: '/docs/api/basics' },
+      { title: 'Authentication', url: '/docs/api/authentication' },
+      { title: 'Rate Limits', url: '/docs/api/rate-limits' },
+      { title: 'Webhooks', url: '/docs/api/webhooks' },
+      { title: 'OAuth2 Integration', url: '/docs/api/oauth2' }
+    ]
+  },
+  {
+    title: 'Deployment',
+    description: 'Learn about hosting and deployment',
+    links: [
+      { title: 'Hosting Your Bot', url: '/docs/deployment/hosting' },
+      { title: 'Scaling', url: '/docs/deployment/scaling' },
+      { title: 'Monitoring', url: '/docs/deployment/monitoring' },
+      { title: 'CI/CD', url: '/docs/deployment/ci-cd' },
+    ]
+  },
+  {
+    title: 'Best Practices',
+    description: 'Follow Discord development best practices',
+    links: [
+      { title: 'Security', url: '/docs/best-practices/security' },
+      { title: 'Performance', url: '/docs/best-practices/performance' },
+      { title: 'Code Structure', url: '/docs/best-practices/code-structure' },
+      { title: 'Error Handling', url: '/docs/best-practices/error-handling' },
+    ]
+  }
+];
+---
+
+<Layout title="Content - Discord Developer Documentation">
+  <div class="py-8">
+    <h1 class="text-4xl font-bold mb-8 text-center">Documentation</h1>
+    <Search />
+    
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+      {categories.map(category => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-2">{category.title}</h2>
+          <p class="text-gray-300 mb-4">{category.description}</p>
+          <ul class="space-y-2">
+            {category.links.map(link => (
+              <li>
+                <a 
+                  href={link.url}
+                  class="text-[#5865F2] hover:underline flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                  {link.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-12 text-center">
+      <h2 class="text-2xl font-semibold mb-4">Need More Help?</h2>
+      <div class="flex justify-center gap-4">
+        <a 
+          href="/tutorials"
+          class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+        >
+          View Tutorials
+        </a>
+        <a 
+          href="/examples"
+          class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+        >
+          Browse Examples
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

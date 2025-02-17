@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'Getting Started',
+    content: `
+      Begin your journey in Discord bot development:
+      
+      - Setting up your development environment
+      - Creating your first bot
+      - Understanding the basics of Discord.js
+      - Bot configuration and deployment
+    `,
+    link: '/getting-started'
+  },
+  {
+    title: 'Advanced Features',
+    content: `
+      Take your bot to the next level:
+      
+      - Implementing complex commands
+      - Handling events efficiently
+      - Database integration
+      - Scaling your bot
+    `,
+    link: '/docs/discord-js/advanced'
+  },
+  {
+    title: 'Bot Hosting',
+    content: `
+      Learn about hosting options and deployment:
+      
+      - Choosing a hosting provider
+      - Deployment strategies
+      - Monitoring and maintenance
+      - Performance optimization
+    `,
+    link: '/docs/deployment/hosting'
+  }
+];
+---
+
+<Layout title="Bot Development - Discord Developer Guide">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Discord Bot Development</h1>
+    
+    <div class="space-y-8">
+      {sections.map(section => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">{section.title}</h2>
+          <div class="prose prose-invert max-w-none mb-4">
+            {section.content}
+          </div>
+          <a 
+            href={section.link}
+            class="inline-block bg-[#5865F2] hover:bg-[#4752C4] px-4 py-2 rounded-md font-medium transition-colors"
+          >
+            Learn More →
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

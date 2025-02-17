@@ -1,0 +1,222 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const sections = [
+  {
+    title: 'REST API Endpoints',
+    content: `
+      Core Discord API endpoints:
+
+      1. **Authentication**
+         - \`POST /oauth2/token\` - Get access token
+         - \`GET /users/@me\` - Get current user
+         - \`GET /users/@me/guilds\` - Get user guilds
+
+      2. **Channels**
+         - \`GET /channels/{channel.id}\` - Get channel
+         - \`POST /channels/{channel.id}/messages\` - Send message
+         - \`GET /channels/{channel.id}/messages\` - Get messages
+         - \`PATCH /channels/{channel.id}\` - Modify channel
+
+      3. **Guilds**
+         - \`GET /guilds/{guild.id}\` - Get guild
+         - \`GET /guilds/{guild.id}/members\` - Get members
+         - \`GET /guilds/{guild.id}/channels\` - Get channels
+         - \`POST /guilds/{guild.id}/channels\` - Create channel
+    `
+  },
+  {
+    title: 'Gateway API',
+    content: `
+      WebSocket events and opcodes:
+
+      1. **Gateway Events**
+         - \`READY\` - Connection established
+         - \`MESSAGE_CREATE\` - New message
+         - \`GUILD_CREATE\` - Added to guild
+         - \`INTERACTION_CREATE\` - Slash command used
+
+      2. **Opcodes**
+         - \`0\` - Dispatch
+         - \`1\` - Heartbeat
+         - \`2\` - Identify
+         - \`6\` - Resume
+         - \`7\` - Reconnect
+
+      Example Gateway connection:
+
+      \`\`\`javascript
+      const ws = new WebSocket('wss://gateway.discord.gg');
+
+      ws.on('open', () => {
+        // Send identify payload
+        ws.send(JSON.stringify({
+          op: 2,
+          d: {
+            token: 'YOUR_BOT_TOKEN',
+            intents: 513,
+            properties: {
+              os: 'linux',
+              browser: 'disco',
+              device: 'disco'
+            }
+          }
+        }));
+      });
+
+      ws.on('message', (data) => {
+        const payload = JSON.parse(data);
+        switch (payload.op) {
+          case 10: // Hello
+            // Start heartbeating
+            break;
+          case 0: // Dispatch
+            handleEvent(payload.t, payload.d);
+            break;
+        }
+      });
+      \`\`\`
+    `
+  },
+  {
+    title: 'Rate Limits',
+    content: `
+      Understanding Discord's rate limits:
+
+      1. **Global Rate Limits**
+         - 50 requests per second per bot
+         - Applies to all API requests
+         - Resets every second
+
+      2. **Route-Specific Limits**
+         - \`POST /channels/{channel.id}/messages\` - 5 requests per 5 seconds
+         - \`PATCH /channels/{channel.id}\` - 2 requests per 10 seconds
+         - \`DELETE /channels/{channel.id}/messages\` - 5 requests per 1 second
+
+      Example rate limit handling:
+
+      \`\`\`javascript
+      class RateLimiter {
+        constructor() {
+          this.buckets = new Map();
+        }
+
+        async handleRequest(route, handler) {
+          const bucket = this.getBucket(route);
+          
+          if (bucket.remaining === 0) {
+            const waitTime = bucket.reset - Date.now();
+            if (waitTime > 0) {
+              await new Promise(resolve => 
+                setTimeout(resolve, waitTime));
+            }
+          }
+
+          try {
+            const response = await handler();
+            this.updateBucket(route, response.headers);
+            return response;
+          } catch (error) {
+            if (error.status === 429) {
+              await this.handleRateLimit(error);
+              return this.handleRequest(route, handler);
+            }
+            throw error;
+          }
+        }
+
+        updateBucket(route, headers) {
+          const bucket = this.getBucket(route);
+          bucket.remaining = parseInt(headers['x-ratelimit-remaining']);
+          bucket.reset = parseInt(headers['x-ratelimit-reset']) * 1000;
+        }
+      }
+      \`\`\`
+    `
+  },
+  {
+    title: 'Error Codes',
+    content: `
+      Common Discord API error codes:
+
+      1. **HTTP Status Codes**
+         - \`401\` - Unauthorized (Invalid token)
+         - \`403\` - Forbidden (Missing permissions)
+         - \`404\` - Not Found
+         - \`429\` - Too Many Requests
+         - \`502\` - Gateway Unavailable
+
+      2. **JSON Error Codes**
+         - \`10003\` - Unknown Channel
+         - \`10004\` - Unknown Guild
+         - \`10013\` - Unknown User
+         - \`50001\` - Missing Access
+         - \`50013\` - Missing Permissions
+
+      Example error handling:
+
+      \`\`\`javascript
+      async function handleDiscordError(error) {
+        switch (error.code) {
+          case 50001:
+            console.error('Missing Access:', error.message);
+            break;
+          case 50013:
+            console.error('Missing Permissions:', error.message);
+            break;
+          case 10003:
+            console.error('Unknown Channel:', error.message);
+            break;
+          case 10004:
+            console.error('Unknown Guild:', error.message);
+            break;
+          case 429:
+            const retryAfter = error.headers['retry-after'] * 1000;
+            console.warn(\`Rate limited. Waiting \${retryAfter}ms\`);
+            await new Promise(resolve => 
+              setTimeout(resolve, retryAfter));
+            break;
+          default:
+            console.error('Unknown error:', error);
+        }
+      }
+      \`\`\`
+    `
+  }
+];
+---
+
+<Layout title="Discord API Reference">
+  <div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-4xl font-bold mb-8">Discord API Reference</h1>
+    
+    <div class="space-y-12">
+      {sections.map((section, index) => (
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
+          <h2 class="text-2xl font-semibold mb-4">
+            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
+            {section.title}
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            {section.content}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 flex justify-between">
+      <a 
+        href="/content" 
+        class="bg-[#4F545C] hover:bg-[#686D73] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        ← Back to Content
+      </a>
+      <a 
+        href="/docs/api/basics" 
+        class="bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
+      >
+        View API Basics →
+      </a>
+    </div>
+  </div>
+</Layout>
