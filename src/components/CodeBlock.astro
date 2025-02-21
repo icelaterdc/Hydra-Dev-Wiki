@@ -1,6 +1,9 @@
 ---
 import Prism from 'prismjs';
+// Mevcut tema
 import 'prismjs/themes/prism-tomorrow.css';
+// JSX dil desteği
+import 'prismjs/components/prism-jsx'; 
 
 const { code, language = 'javascript' } = Astro.props;
 const highlightedCode = Prism.highlight(code, Prism.languages[language], language);
