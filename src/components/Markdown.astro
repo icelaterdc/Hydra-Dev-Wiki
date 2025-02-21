@@ -1,7 +1,0 @@
----
-import { marked } from 'marked';
-
-const { content } = Astro.props;
-const html = marked(content);
----
-<div innerHTML={html}></div>
