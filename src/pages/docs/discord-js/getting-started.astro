@@ -9,90 +9,77 @@ const sections = [
       
       - Node.js v16.9.0 or higher installed
       - A code editor (VS Code recommended)
----
-import Layout from '../../../layouts/Layout.astro';
-import CodeBlock from '../../../components/CodeBlock.astro';
-
-// Her bölümün (section) içeriğini hem düz metin (content) 
-// hem de kod blokları (code) olarak parçalıyoruz.
-const sections = [
-  {
-    title: 'Prerequisites',
-    // Düz metin (Markdown biçimi olmadan)
-    content: `Before you begin, make sure you have:
-
-- Node.js v16.9.0 or higher installed
-- A code editor (VS Code recommended)
-- Basic JavaScript knowledge
-- A Discord account`
+      - Basic JavaScript knowledge
+      - A Discord account
+    `
   },
   {
     title: 'Creating a Discord Application',
-    content: `1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click "New Application"
-3. Give your application a name
-4. Navigate to the "Bot" section
-5. Click "Add Bot"
-6. Copy your bot token (keep it secure!)`
+    content: `
+      1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+      2. Click "New Application"
+      3. Give your application a name
+      4. Navigate to the "Bot" section
+      5. Click "Add Bot"
+      6. Copy your bot token (keep it secure!)
+    `
   },
   {
     title: 'Setting Up Your Project',
-    // Metnin ilk kısmı
-    content: `Create a new Node.js project:`,
-    // İlk kod bloğu (bash)
-    code1: {
-      language: 'bash',
-      code: `mkdir my-discord-bot
-cd my-discord-bot
-npm init -y
-npm install discord.js`
-    },
-    // Metnin ikinci kısmı
-    content2: `Create your main bot file (index.js):`,
-    // İkinci kod bloğu (javascript)
-    code2: {
-      language: 'javascript',
-      code: `const { Client, GatewayIntentBits } = require('discord.js');
+    content: `
+      Create a new Node.js project:
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
-});
+      \`\`\`bash
+      mkdir my-discord-bot
+      cd my-discord-bot
+      npm init -y
+      npm install discord.js
+      \`\`\`
 
-client.once('ready', () => {
-  console.log(\`Logged in as \${client.user.tag}\`);
-});
+      Create your main bot file (index.js):
 
-client.on('messageCreate', message => {
-  if (message.content === '!ping') {
-    message.reply('Pong!');
-  }
-});
+      \`\`\`javascript
+      const { Client, GatewayIntentBits } = require('discord.js');
 
-client.login('your-token-here');`
-    }
+      const client = new Client({
+        intents: [
+          GatewayIntentBits.Guilds,
+          GatewayIntentBits.GuildMessages,
+          GatewayIntentBits.MessageContent
+        ]
+      });
+
+      client.once('ready', () => {
+        console.log(\`Logged in as \${client.user.tag}\`);
+      });
+
+      client.on('messageCreate', message => {
+        if (message.content === '!ping') {
+          message.reply('Pong!');
+        }
+      });
+
+      client.login('your-token-here');
+      \`\`\`
+    `
   },
   {
     title: 'Running Your Bot',
-    // Metnin ilk kısmı
-    content: `1. Save your bot token in a .env file:`,
-    // İlk kod bloğu (.env içerik, bash veya ini benzeri)
-    code1: {
-      language: 'bash',
-      code: `TOKEN=your-token-here`
-    },
-    // Metnin ikinci kısmı
-    content2: `2. Run your bot:`,
-    // İkinci kod bloğu (bash)
-    code2: {
-      language: 'bash',
-      code: `node index.js`
-    },
-    // Metnin üçüncü kısmı
-    content3: `Your bot should now be online and responding to the !ping command!`
+    content: `
+      1. Save your bot token in a .env file:
+      
+      \`\`\`bash
+      TOKEN=your-token-here
+      \`\`\`
+
+      2. Run your bot:
+
+      \`\`\`bash
+      node index.js
+      \`\`\`
+
+      Your bot should now be online and responding to the !ping command!
+    `
   }
 ];
 ---
@@ -103,30 +90,13 @@ client.login('your-token-here');`
     
     <div class="space-y-12">
       {sections.map((section, index) => (
-        <div class="bg-[#2B2D31] p-6 rounded-lg" key={index}>
+        <div class="bg-[#2B2D31] p-6 rounded-lg">
           <h2 class="text-2xl font-semibold mb-4">
             <span class="text-[#5865F2] mr-2">{index + 1}.</span>
             {section.title}
           </h2>
-          <div class="prose prose-invert max-w-none space-y-4">
-            {/* content varsa düz paragraf olarak göster */}
-            {section.content && <p>{section.content}</p>}
-
-            {/* code1 varsa CodeBlock bileşeni ile göster */}
-            {section.code1 && (
-              <CodeBlock code={section.code1.code} language={section.code1.language} />
-            )}
-
-            {/* content2 varsa düz paragraf olarak göster */}
-            {section.content2 && <p>{section.content2}</p>}
-
-            {/* code2 varsa CodeBlock bileşeni ile göster */}
-            {section.code2 && (
-              <CodeBlock code={section.code2.code} language={section.code2.language} />
-            )}
-
-            {/* content3 varsa düz paragraf olarak göster */}
-            {section.content3 && <p>{section.content3}</p>}
+          <div class="prose prose-invert max-w-none">
+            {section.content}
           </div>
         </div>
       ))}
