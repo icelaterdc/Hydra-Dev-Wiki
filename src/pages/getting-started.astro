@@ -1,63 +1,73 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Markdown from '../components/Markdown.astro';
+import CodeBlock from '../components/CodeBlock.astro';
 
 const steps = [
   {
     title: 'Setting Up Your Development Environment',
     content: `
-      Before you start developing Discord bots, you'll need to set up your development environment:
-      
-      1. Install Node.js (version 16.9.0 or higher)
-      2. Set up a code editor (we recommend Visual Studio Code)
-      3. Create a Discord account and access the Developer Portal
-      4. Create a new application in the Discord Developer Portal
+Before you start developing Discord bots, you'll need to set up your development environment:
+
+1. Install Node.js (version 16.9.0 or higher)
+2. Set up a code editor (we recommend Visual Studio Code)
+3. Create a Discord account and access the Developer Portal
+4. Create a new application in the Discord Developer Portal
     `,
     link: '/docs/discord-js/getting-started'
   },
   {
     title: 'Creating Your First Bot',
     content: `
-      Let's create a basic Discord bot:
+Let's create a basic Discord bot:
 
-      1. Create a new Discord application
-      2. Add a bot user to your application
-      3. Get your bot token
-      4. Set up a new Node.js project
-      5. Install discord.js
-      6. Write your first bot code
+1. Create a new Discord application
+2. Add a bot user to your application
+3. Get your bot token
+4. Set up a new Node.js project
+5. Install discord.js
+6. Write your first bot code
     `,
     link: '/tutorials/first-bot'
   },
   {
     title: 'Next Steps',
     content: `
-      After creating your first bot, explore these topics:
+After creating your first bot, explore these topics:
 
-      1. Implementing slash commands
-      2. Handling events
-      3. Database integration
-      4. Deployment and hosting
+1. Implementing slash commands
+2. Handling events
+3. Database integration
+4. Deployment and hosting
 
-      Choose your learning path based on your needs and interests.
+Choose your learning path based on your needs and interests.
     `,
     link: '/content'
   }
 ];
----
 
+const exampleCode = `import Layout from '../layouts/Layout.astro';
+
+const steps = [ /* adım içeriği burada */ ];
+
+<Layout title="Getting Started - Discord Bot Development">
+  {/* Adımların render edilmesi */}
+</Layout>
+`;
+---
 <Layout title="Getting Started - Discord Bot Development">
   <div class="max-w-4xl mx-auto py-8">
     <h1 class="text-4xl font-bold mb-8">Getting Started with Discord Bot Development</h1>
     
     <div class="space-y-12">
       {steps.map((step, index) => (
-        <div class="bg-[#2B2D31] p-6 rounded-lg">
+        <div class="bg-[#2B2D31] p-6 rounded-lg" key={index}>
           <h2 class="text-2xl font-semibold mb-4">
             <span class="text-[#5865F2] mr-2">{index + 1}.</span>
             {step.title}
           </h2>
           <div class="prose prose-invert max-w-none mb-4">
-            {step.content}
+            <Markdown content={step.content} />
           </div>
           <a 
             href={step.link}
@@ -67,6 +77,11 @@ const steps = [
           </a>
         </div>
       ))}
+    </div>
+
+    <div class="mt-12 bg-[#2B2D31] p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4">Example Code</h2>
+      <CodeBlock code={exampleCode} language="jsx" />
     </div>
 
     <div class="mt-12 bg-[#2B2D31] p-6 rounded-lg">
