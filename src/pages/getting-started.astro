@@ -1,114 +1,110 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Markdown from '../components/Markdown.astro';
 import CodeBlock from '../components/CodeBlock.astro';
-
-const steps = [
-  {
-    title: 'Setting Up Your Development Environment',
-    content: `
-Before you start developing Discord bots, you'll need to set up your development environment:
-
-1. Install Node.js (version 16.9.0 or higher)
-2. Set up a code editor (we recommend Visual Studio Code)
-3. Create a Discord account and access the Developer Portal
-4. Create a new application in the Discord Developer Portal
-    `,
-    link: '/docs/discord-js/getting-started'
-  },
-  {
-    title: 'Creating Your First Bot',
-    content: `
-Let's create a basic Discord bot:
-
-1. Create a new Discord application
-2. Add a bot user to your application
-3. Get your bot token
-4. Set up a new Node.js project
-5. Install discord.js
-6. Write your first bot code
-    `,
-    link: '/tutorials/first-bot'
-  },
-  {
-    title: 'Next Steps',
-    content: `
-After creating your first bot, explore these topics:
-
-1. Implementing slash commands
-2. Handling events
-3. Database integration
-4. Deployment and hosting
-
-Choose your learning path based on your needs and interests.
-    `,
-    link: '/content'
-  }
-];
-
-const exampleCode = `import Layout from '../layouts/Layout.astro';
-
-const steps = [ /* adım içeriği burada */ ];
-
-<Layout title="Getting Started - Discord Bot Development">
-  {/* Adımların render edilmesi */}
-</Layout>
-`;
 ---
-<Layout title="Getting Started - Discord Bot Development">
-  <div class="max-w-4xl mx-auto py-8">
-    <h1 class="text-4xl font-bold mb-8">Getting Started with Discord Bot Development</h1>
-    
-    <div class="space-y-12">
-      {steps.map((step, index) => (
-        <div class="bg-[#2B2D31] p-6 rounded-lg" key={index}>
-          <h2 class="text-2xl font-semibold mb-4">
-            <span class="text-[#5865F2] mr-2">{index + 1}.</span>
-            {step.title}
-          </h2>
-          <div class="prose prose-invert max-w-none mb-4">
-            <Markdown content={step.content} />
-          </div>
-          <a 
-            href={step.link}
-            class="inline-block bg-[#5865F2] hover:bg-[#4752C4] px-6 py-3 rounded-md font-medium transition-colors"
-          >
-            Continue →
-          </a>
-        </div>
-      ))}
-    </div>
 
-    <div class="mt-12 bg-[#2B2D31] p-6 rounded-lg">
-      <h2 class="text-2xl font-semibold mb-4">Example Code</h2>
-      <CodeBlock code={exampleCode} language="jsx" />
-    </div>
+<Layout title="Getting Started with Discord.js">
+  <div class="max-w-3xl mx-auto space-y-8">
 
-    <div class="mt-12 bg-[#2B2D31] p-6 rounded-lg">
-      <h2 class="text-2xl font-semibold mb-4">Ready to Explore More?</h2>
-      <p class="text-gray-300 mb-6">
-        Once you've completed the getting started guide, you can:
+    <!-- Başlık -->
+    <h1 class="text-3xl font-bold mb-4">Getting Started with Discord.js</h1>
+
+    <!-- 1. Prerequisites -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">1. Prerequisites</h2>
+      <p class="mb-4">
+        Before you begin, make sure you have:
       </p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a 
-          href="/bot-development"
-          class="bg-[#1E1F22] hover:bg-[#2B2D31] p-4 rounded-lg text-center transition-colors"
-        >
-          Bot Development
-        </a>
-        <a 
-          href="/api-integration"
-          class="bg-[#1E1F22] hover:bg-[#2B2D31] p-4 rounded-lg text-center transition-colors"
-        >
-          API Integration
-        </a>
-        <a 
-          href="/best-practices"
-          class="bg-[#1E1F22] hover:bg-[#2B2D31] p-4 rounded-lg text-center transition-colors"
-        >
-          Best Practices
-        </a>
-      </div>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Node.js v16.0 or higher</li>
+        <li>A code editor (VS Code recommended)</li>
+        <li>Basic JavaScript knowledge</li>
+        <li>A Discord account</li>
+      </ul>
+    </section>
+
+    <!-- 2. Creating a Discord Application -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">2. Creating a Discord Application</h2>
+      <ol class="list-decimal list-inside space-y-2">
+        <li>
+          Go to the 
+          <a 
+            href="https://discord.com/developers/applications" 
+            class="text-blue-400 underline" 
+            target="_blank"
+          >
+            Discord Developer Portal
+          </a>.
+        </li>
+        <li>
+          Click <strong>"New Application"</strong> and name your bot.
+        </li>
+        <li>
+          Navigate to the <strong>Bot</strong> section and click <strong>"Add Bot"</strong>.
+        </li>
+        <li>
+          Copy your bot token (you'll need this later).
+        </li>
+      </ol>
+    </section>
+
+    <!-- 3. Setting Up Your Project -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">3. Setting Up Your Project</h2>
+      <p class="mb-4">
+        Follow these steps to create a new Node.js project and install the necessary dependencies:
+      </p>
+
+      <!-- Terminal komutları -->
+      <CodeBlock code={`npm init -y\nnpm i discord.js`} language="bash" />
+
+      <p class="mt-4">
+        Next, create an <code class="bg-gray-800 px-1 py-0.5 rounded">index.js</code> file in your project folder and add the following code:
+      </p>
+
+      <!-- index.js kod bloğu -->
+      <CodeBlock 
+        code={`const { Client, GatewayIntentBits } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+
+client.once('ready', () => {
+  console.log(\`Logged in as \${client.user.tag}\`);
+});
+
+client.on('messageCreate', message => {
+  if (message.content === 'ping') {
+    message.channel.send('pong!');
+  }
+});
+
+client.login('YOUR_BOT_TOKEN');`} 
+        language="javascript" 
+      />
+    </section>
+
+    <!-- 4. Running Your Bot -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">4. Running Your Bot</h2>
+      <p>
+        In your terminal, run the following command to start your bot:
+      </p>
+      <CodeBlock code={`node index.js`} language="bash" />
+      <p class="mt-2">
+        Replace <code>YOUR_BOT_TOKEN</code> with the actual token from the Developer Portal.
+        Keep your token secret!
+      </p>
+    </section>
+
+    <!-- Sonraki sayfa bağlantısı (Opsiyonel) -->
+    <div class="mt-8 flex justify-end">
+      <a 
+        href="/creating-commands" 
+        class="inline-block bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded transition-colors"
+      >
+        Next: Creating Commands →
+      </a>
     </div>
+
   </div>
 </Layout>
