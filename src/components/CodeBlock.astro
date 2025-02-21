@@ -1,0 +1,20 @@
+---
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-tomorrow.css';
+
+const { code, language = 'javascript' } = Astro.props;
+const highlightedCode = Prism.highlight(code, Prism.languages[language], language);
+
+function copyCode() {
+  navigator.clipboard.writeText(code);
+}
+---
+<div class="relative bg-black rounded-lg overflow-hidden">
+  <button 
+    onClick={copyCode}
+    class="absolute top-2 right-2 bg-gray-800 hover:bg-gray-700 text-white text-xs px-2 py-1 rounded"
+  >
+    Copy
+  </button>
+  <pre class="m-0 p-4 overflow-x-auto" innerHTML={highlightedCode}></pre>
+</div>
