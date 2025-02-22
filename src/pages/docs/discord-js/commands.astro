@@ -1,95 +1,110 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
+
+// Marked ayarlarını yapılandırıyoruz: Kod bloklarını highlight.js ile işleyelim.
+marked.setOptions({
+  highlight: (code, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(code, { language: lang }).value;
+    }
+    return hljs.highlightAuto(code).value;
+  },
+  gfm: true,
+  breaks: true,
+});
 
 const sections = [
   {
     title: 'Understanding Discord Commands',
     content: `
-      Discord bots can respond to commands in two ways:
+Discord bots can respond to commands in two ways:
       
-      1. **Slash Commands** - Modern, integrated commands that appear in Discord's UI
-      2. **Message Commands** - Traditional text-based commands that respond to messages
+1. **Slash Commands** - Modern, integrated commands that appear in Discord's UI  
+2. **Message Commands** - Traditional text-based commands that respond to messages
 
-      We recommend using Slash Commands for new bots as they provide better user experience and integration with Discord.
-    `
+We recommend using Slash Commands for new bots as they provide better user experience and integration with Discord.
+`
   },
   {
     title: 'Creating Slash Commands',
     content: `
-      Here's how to create a basic slash command:
+Here's how to create a basic slash command:
 
-      \`\`\`javascript
-      const { SlashCommandBuilder } = require('discord.js');
+\`\`\`javascript
+const { SlashCommandBuilder } = require('discord.js');
 
-      const pingCommand = new SlashCommandBuilder()
-        .setName('ping')
-        .setDescription('Replies with Pong!');
+const pingCommand = new SlashCommandBuilder()
+  .setName('ping')
+  .setDescription('Replies with Pong!');
 
-      client.on('interactionCreate', async interaction => {
-        if (!interaction.isCommand()) return;
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
 
-        if (interaction.commandName === 'ping') {
-          await interaction.reply('Pong!');
-        }
-      });
-      \`\`\`
-    `
+  if (interaction.commandName === 'ping') {
+    await interaction.reply('Pong!');
+  }
+});
+\`\`\`
+`
   },
   {
     title: 'Command Options',
     content: `
-      Slash commands can have various options:
+Slash commands can have various options:
 
-      \`\`\`javascript
-      const greetCommand = new SlashCommandBuilder()
-        .setName('greet')
-        .setDescription('Greets a user')
-        .addUserOption(option =>
-          option
-            .setName('user')
-            .setDescription('The user to greet')
-            .setRequired(true)
-        );
+\`\`\`javascript
+const greetCommand = new SlashCommandBuilder()
+  .setName('greet')
+  .setDescription('Greets a user')
+  .addUserOption(option =>
+    option
+      .setName('user')
+      .setDescription('The user to greet')
+      .setRequired(true)
+  );
 
-      client.on('interactionCreate', async interaction => {
-        if (!interaction.isCommand()) return;
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
 
-        if (interaction.commandName === 'greet') {
-          const user = interaction.options.getUser('user');
-          await interaction.reply(\`Hello, \${user.username}!\`);
-        }
-      });
-      \`\`\`
-    `
+  if (interaction.commandName === 'greet') {
+    const user = interaction.options.getUser('user');
+    await interaction.reply(\`Hello, \${user.username}!\`);
+  }
+});
+\`\`\`
+`
   },
   {
     title: 'Registering Commands',
     content: `
-      After creating commands, you need to register them with Discord:
+After creating commands, you need to register them with Discord:
 
-      \`\`\`javascript
-      const { REST, Routes } = require('discord.js');
+\`\`\`javascript
+const { REST, Routes } = require('discord.js');
 
-      const commands = [
-        pingCommand.toJSON(),
-        greetCommand.toJSON()
-      ];
+const commands = [
+  pingCommand.toJSON(),
+  greetCommand.toJSON()
+];
 
-      const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
-      (async () => {
-        try {
-          await rest.put(
-            Routes.applicationCommands(CLIENT_ID),
-            { body: commands }
-          );
-          console.log('Commands registered successfully!');
-        } catch (error) {
-          console.error(error);
-        }
-      })();
-      \`\`\`
-    `
+(async () => {
+  try {
+    await rest.put(
+      Routes.applicationCommands(CLIENT_ID),
+      { body: commands }
+    );
+    console.log('Commands registered successfully!');
+  } catch (error) {
+    console.error(error);
+  }
+})();
+\`\`\`
+`
   }
 ];
 ---
@@ -105,9 +120,8 @@ const sections = [
             <span class="text-[#5865F2] mr-2">{index + 1}.</span>
             {section.title}
           </h2>
-          <div class="prose prose-invert max-w-none">
-            {section.content}
-          </div>
+          <!-- Markdown içeriğini marked ile HTML’ye dönüştürüp render ediyoruz -->
+          <div class="prose prose-invert max-w-none section-content" set:html={marked(section.content)}></div>
         </div>
       ))}
     </div>
@@ -127,4 +141,82 @@ const sections = [
       </a>
     </div>
   </div>
+
+  <!-- Kod kutusu ve kopyalama butonunun stil tanımlamaları -->
+  <style>
+    .code-container {
+      position: relative;
+      background-color: #2B2D31;
+      border-radius: 8px;
+      margin: 1rem 0;
+      overflow: auto;
+    }
+    .code-container pre {
+      margin: 0;
+      padding: 1rem;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.875rem;
+      background: transparent;
+    }
+    .copy-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .copy-button:hover {
+      opacity: 1;
+    }
+    .copy-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: #f8f8f2;
+    }
+  </style>
+
+  <!-- Script: Kod bloklarını sarmalayıp kopyalama butonunu ekliyoruz -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const codeBlocks = document.querySelectorAll('.section-content pre');
+      codeBlocks.forEach((block) => {
+        if (!block.parentElement.classList.contains('code-container')) {
+          const container = document.createElement('div');
+          container.className = 'code-container';
+          block.parentNode.insertBefore(container, block);
+          container.appendChild(block);
+
+          const button = document.createElement('button');
+          button.className = 'copy-button';
+          button.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24">
+              <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+            </svg>
+          `;
+          container.appendChild(button);
+
+          button.addEventListener('click', () => {
+            const codeText = block.innerText.trim();
+            navigator.clipboard.writeText(codeText).then(() => {
+              button.innerHTML = `
+                <svg class="copy-icon" viewBox="0 0 24 24">
+                  <path d="M9,16.17l-3.88-3.88L4,13.41,9,18.41l12-12L19.59,5l-10.59,10.59Z"/>
+                </svg>
+              `;
+              setTimeout(() => {
+                button.innerHTML = `
+                  <svg class="copy-icon" viewBox="0 0 24 24">
+                    <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+                  </svg>
+                `;
+              }, 2000);
+            });
+          });
+        }
+      });
+    });
+  </script>
 </Layout>
