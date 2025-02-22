@@ -1,86 +1,100 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
+
+// Marked için highlight ayarlarını yapıyoruz:
+marked.setOptions({
+  highlight: (code, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(code, { language: lang }).value;
+    }
+    return hljs.highlightAuto(code).value;
+  },
+  gfm: true,
+  breaks: true,
+});
 
 const sections = [
   {
     title: 'Prerequisites',
     content: `
-      Before you begin, make sure you have:
-      
-      - Node.js v16.9.0 or higher installed
-      - A code editor (VS Code recommended)
-      - Basic JavaScript knowledge
-      - A Discord account
-    `
+Before you begin, make sure you have:
+
+- Node.js v16.9.0 or higher installed
+- A code editor (VS Code recommended)
+- Basic JavaScript knowledge
+- A Discord account
+`
   },
   {
     title: 'Creating a Discord Application',
     content: `
-      1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
-      2. Click "New Application"
-      3. Give your application a name
-      4. Navigate to the "Bot" section
-      5. Click "Add Bot"
-      6. Copy your bot token (keep it secure!)
-    `
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click "New Application"
+3. Give your application a name
+4. Navigate to the "Bot" section
+5. Click "Add Bot"
+6. Copy your bot token (keep it secure!)
+`
   },
   {
     title: 'Setting Up Your Project',
     content: `
-      Create a new Node.js project:
+Create a new Node.js project:
 
-      \`\`\`bash
-      mkdir my-discord-bot
-      cd my-discord-bot
-      npm init -y
-      npm install discord.js
-      \`\`\`
+\`\`\`bash
+mkdir my-discord-bot
+cd my-discord-bot
+npm init -y
+npm install discord.js
+\`\`\`
 
-      Create your main bot file (index.js):
+Create your main bot file (index.js):
 
-      \`\`\`javascript
-      const { Client, GatewayIntentBits } = require('discord.js');
+\`\`\`javascript
+const { Client, GatewayIntentBits } = require('discord.js');
 
-      const client = new Client({
-        intents: [
-          GatewayIntentBits.Guilds,
-          GatewayIntentBits.GuildMessages,
-          GatewayIntentBits.MessageContent
-        ]
-      });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
+});
 
-      client.once('ready', () => {
-        console.log(\`Logged in as \${client.user.tag}\`);
-      });
+client.once('ready', () => {
+  console.log(\`Logged in as \${client.user.tag}\`);
+});
 
-      client.on('messageCreate', message => {
-        if (message.content === '!ping') {
-          message.reply('Pong!');
-        }
-      });
+client.on('messageCreate', message => {
+  if (message.content === '!ping') {
+    message.reply('Pong!');
+  }
+});
 
-      client.login('your-token-here');
-      \`\`\`
-    `
+client.login('your-token-here');
+\`\`\`
+`
   },
   {
     title: 'Running Your Bot',
     content: `
-      1. Save your bot token in a .env file:
-      
-      \`\`\`bash
-      TOKEN=your-token-here
-      \`\`\`
+1. Save your bot token in a .env file:
 
-      2. Run your bot:
+\`\`\`bash
+TOKEN=your-token-here
+\`\`\`
 
-      \`\`\`bash
-      node index.js
-      \`\`\`
+2. Run your bot:
 
-      Your bot should now be online and responding to the !ping command!
-    `
+\`\`\`bash
+node index.js
+\`\`\`
+
+Your bot should now be online and responding to the !ping command!
+`
   }
 ];
 ---
@@ -97,8 +111,7 @@ const sections = [
             {section.title}
           </h2>
           <!-- Markdown içeriğini HTML olarak render ediyoruz -->
-          <div class="prose prose-invert max-w-none section-content" set:html={marked(section.content)}>
-          </div>
+          <div class="prose prose-invert max-w-none section-content" set:html={marked(section.content)}></div>
         </div>
       ))}
     </div>
@@ -119,68 +132,78 @@ const sections = [
     </div>
   </div>
 
-  <!-- Kod kutusu stil ve kopyalama butonu için özel CSS -->
+  <!-- Stil: Kod kutuları, kopyalama butonu ve ikon -->
   <style>
     .code-container {
       position: relative;
       background-color: #2B2D31;
       border-radius: 8px;
-      padding: 1rem;
       margin: 1rem 0;
       overflow: auto;
     }
     .code-container pre {
-      background: transparent;
       margin: 0;
-      font-family: monospace;
+      padding: 1rem;
+      font-family: 'Source Code Pro', monospace;
       font-size: 0.875rem;
-      color: #f8f8f2;
+      background: transparent;
     }
     .copy-button {
       position: absolute;
       top: 0.5rem;
       right: 0.5rem;
-      background-color: #5865F2;
-      color: white;
+      background: transparent;
       border: none;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-      border-radius: 4px;
       cursor: pointer;
-      opacity: 0;
+      opacity: 0.7;
       transition: opacity 0.3s;
     }
-    .code-container:hover .copy-button {
+    .copy-button:hover {
       opacity: 1;
+    }
+    .copy-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: #f8f8f2;
     }
   </style>
 
-  <!-- Tüm kod bloklarına kopyalama fonksiyonu ekleyen script -->
+  <!-- Script: Kod bloklarını sarar, kopyalama butonunu ekler ve tıklama olayını işler -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // .section-content içindeki tüm <pre> elementlerini buluyoruz
       const codeBlocks = document.querySelectorAll('.section-content pre');
       codeBlocks.forEach((block) => {
-        // Zaten wrap edilmemişse container oluşturuyoruz
         if (!block.parentElement.classList.contains('code-container')) {
           const container = document.createElement('div');
           container.className = 'code-container';
           block.parentNode.insertBefore(container, block);
           container.appendChild(block);
 
-          // Kopyalama butonunu oluşturuyoruz
+          // Kopyalama butonu (ikon şeklinde)
           const button = document.createElement('button');
           button.className = 'copy-button';
-          button.textContent = 'Copy';
+          button.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24">
+              <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+            </svg>
+          `;
           container.appendChild(button);
 
-          // Butona tıklanınca kodu kopyalama işlemi
           button.addEventListener('click', () => {
             const codeText = block.innerText.trim();
             navigator.clipboard.writeText(codeText).then(() => {
-              button.textContent = 'Copied!';
+              // Kopyalandı bildirimi için ikon değişikliği
+              button.innerHTML = `
+                <svg class="copy-icon" viewBox="0 0 24 24">
+                  <path d="M9,16.17l-3.88-3.88L4,13.41,9,18.41l12-12L19.59,5l-10.59,10.59Z"/>
+                </svg>
+              `;
               setTimeout(() => {
-                button.textContent = 'Copy';
+                button.innerHTML = `
+                  <svg class="copy-icon" viewBox="0 0 24 24">
+                    <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+                  </svg>
+                `;
               }, 2000);
             });
           });
