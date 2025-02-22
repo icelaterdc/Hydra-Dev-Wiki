@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { marked } from 'marked';
 
 const sections = [
   {
@@ -95,8 +96,8 @@ const sections = [
             <span class="text-[#5865F2] mr-2">{index + 1}.</span>
             {section.title}
           </h2>
-          <div class="prose prose-invert max-w-none">
-            {section.content}
+          <!-- Markdown içeriğini HTML olarak render ediyoruz -->
+          <div class="prose prose-invert max-w-none section-content" set:html={marked(section.content)}>
           </div>
         </div>
       ))}
@@ -117,4 +118,74 @@ const sections = [
       </a>
     </div>
   </div>
+
+  <!-- Kod kutusu stil ve kopyalama butonu için özel CSS -->
+  <style>
+    .code-container {
+      position: relative;
+      background-color: #2B2D31;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      overflow: auto;
+    }
+    .code-container pre {
+      background: transparent;
+      margin: 0;
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: #f8f8f2;
+    }
+    .copy-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background-color: #5865F2;
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .code-container:hover .copy-button {
+      opacity: 1;
+    }
+  </style>
+
+  <!-- Tüm kod bloklarına kopyalama fonksiyonu ekleyen script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // .section-content içindeki tüm <pre> elementlerini buluyoruz
+      const codeBlocks = document.querySelectorAll('.section-content pre');
+      codeBlocks.forEach((block) => {
+        // Zaten wrap edilmemişse container oluşturuyoruz
+        if (!block.parentElement.classList.contains('code-container')) {
+          const container = document.createElement('div');
+          container.className = 'code-container';
+          block.parentNode.insertBefore(container, block);
+          container.appendChild(block);
+
+          // Kopyalama butonunu oluşturuyoruz
+          const button = document.createElement('button');
+          button.className = 'copy-button';
+          button.textContent = 'Copy';
+          container.appendChild(button);
+
+          // Butona tıklanınca kodu kopyalama işlemi
+          button.addEventListener('click', () => {
+            const codeText = block.innerText.trim();
+            navigator.clipboard.writeText(codeText).then(() => {
+              button.textContent = 'Copied!';
+              setTimeout(() => {
+                button.textContent = 'Copy';
+              }, 2000);
+            });
+          });
+        }
+      });
+    });
+  </script>
 </Layout>
