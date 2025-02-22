@@ -1,76 +1,91 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
+
+// Marked ayarlarını yapılandırıyoruz: Kod blokları varsa highlight.js ile işlenecek.
+marked.setOptions({
+  highlight: (code, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(code, { language: lang }).value;
+    }
+    return hljs.highlightAuto(code).value;
+  },
+  gfm: true,
+  breaks: true,
+});
 
 const sections = [
   {
     title: 'Token Security',
     content: `
-      Protect your bot token:
+Protect your bot token:
       
-      1. **Never commit tokens to version control**
-         - Use environment variables
-         - Keep tokens in secure storage
+1. **Never commit tokens to version control**
+   - Use environment variables
+   - Keep tokens in secure storage
       
-      2. **Rotate tokens regularly**
-         - After potential exposure
-         - When team members leave
-         - On regular intervals
+2. **Rotate tokens regularly**
+   - After potential exposure
+   - When team members leave
+   - On regular intervals
       
-      3. **Use secure storage**
-         - Environment variables
-         - Secret management services
-         - Encrypted configuration
+3. **Use secure storage**
+   - Environment variables
+   - Secret management services
+   - Encrypted configuration
     `
   },
   {
     title: 'Permission Management',
     content: `
-      Implement proper permission handling:
+Implement proper permission handling:
 
-      \`\`\`javascript
-      // Check for required permissions
-      if (!interaction.member.permissions.has('BanMembers')) {
-        return interaction.reply({
-          content: 'You do not have permission to use this command.',
-          ephemeral: true
-        });
-      }
+\`\`\`javascript
+// Check for required permissions
+if (!interaction.member.permissions.has('BanMembers')) {
+  return interaction.reply({
+    content: 'You do not have permission to use this command.',
+    ephemeral: true
+  });
+}
 
-      // Use permission flags
-      const requiredPermissions = [
-        PermissionFlagsBits.BanMembers,
-        PermissionFlagsBits.KickMembers
-      ];
+// Use permission flags
+const requiredPermissions = [
+  PermissionFlagsBits.BanMembers,
+  PermissionFlagsBits.KickMembers
+];
 
-      if (!interaction.guild.members.me.permissions.has(requiredPermissions)) {
-        return interaction.reply({
-          content: 'I do not have the required permissions.',
-          ephemeral: true
-        });
-      }
-      \`\`\`
+if (!interaction.guild.members.me.permissions.has(requiredPermissions)) {
+  return interaction.reply({
+    content: 'I do not have the required permissions.',
+    ephemeral: true
+  });
+}
+\`\`\`
     `
   },
   {
     title: 'Input Validation',
     content: `
-      Always validate user input:
+Always validate user input:
 
-      \`\`\`javascript
-      // Validate command input
-      if (amount < 0 || amount > 100) {
-        return interaction.reply({
-          content: 'Amount must be between 0 and 100',
-          ephemeral: true
-        });
-      }
+\`\`\`javascript
+// Validate command input
+if (amount < 0 || amount > 100) {
+  return interaction.reply({
+    content: 'Amount must be between 0 and 100',
+    ephemeral: true
+  });
+}
 
-      // Sanitize user input
-      const sanitizedInput = input
-        .replace(/[<>]/g, '')
-        .trim()
-        .slice(0, 1000);
-      \`\`\`
+// Sanitize user input
+const sanitizedInput = input
+  .replace(/[<>]/g, '')
+  .trim()
+  .slice(0, 1000);
+\`\`\`
     `
   }
 ];
@@ -87,13 +102,11 @@ const sections = [
             <span class="text-[#5865F2] mr-2">{index + 1}.</span>
             {section.title}
           </h2>
-          <div class="prose prose-invert max-w-none">
-            {section.content}
-          </div>
+          <div class="prose prose-invert max-w-none section-content" set:html={marked(section.content)}></div>
         </div>
       ))}
     </div>
-
+    
     <div class="mt-8 flex justify-between">
       <a 
         href="/best-practices" 
@@ -109,4 +122,80 @@ const sections = [
       </a>
     </div>
   </div>
+
+  <style>
+    .code-container {
+      position: relative;
+      background-color: #2B2D31;
+      border-radius: 8px;
+      margin: 1rem 0;
+      overflow: auto;
+    }
+    .code-container pre {
+      margin: 0;
+      padding: 1rem;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.875rem;
+      background: transparent;
+    }
+    .copy-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .copy-button:hover {
+      opacity: 1;
+    }
+    .copy-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: #f8f8f2;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const codeBlocks = document.querySelectorAll('.section-content pre');
+      codeBlocks.forEach((block) => {
+        if (!block.parentElement.classList.contains('code-container')) {
+          const container = document.createElement('div');
+          container.className = 'code-container';
+          block.parentNode.insertBefore(container, block);
+          container.appendChild(block);
+          
+          const button = document.createElement('button');
+          button.className = 'copy-button';
+          button.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24">
+              <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+            </svg>
+          `;
+          container.appendChild(button);
+          
+          button.addEventListener('click', () => {
+            const codeText = block.innerText.trim();
+            navigator.clipboard.writeText(codeText).then(() => {
+              button.innerHTML = `
+                <svg class="copy-icon" viewBox="0 0 24 24">
+                  <path d="M9,16.17l-3.88-3.88L4,13.41,9,18.41l12-12L19.59,5l-10.59,10.59Z"/>
+                </svg>
+              `;
+              setTimeout(() => {
+                button.innerHTML = `
+                  <svg class="copy-icon" viewBox="0 0 24 24">
+                    <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+                  </svg>
+                `;
+              }, 2000);
+            });
+          });
+        }
+      });
+    });
+  </script>
 </Layout>
