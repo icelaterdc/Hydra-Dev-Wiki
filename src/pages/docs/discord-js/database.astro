@@ -1,121 +1,136 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
+
+// Marked ayarlarını yapılandırıyoruz: Kod blokları highlight.js ile işlenecek.
+marked.setOptions({
+  highlight: (code, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(code, { language: lang }).value;
+    }
+    return hljs.highlightAuto(code).value;
+  },
+  gfm: true,
+  breaks: true,
+});
 
 const sections = [
   {
     title: 'Database Integration',
     content: `
-      Choose the right database for your bot:
+Choose the right database for your bot:
       
-      1. **SQL Databases**
-         - PostgreSQL
-         - MySQL
-         - SQLite
+1. **SQL Databases**
+   - PostgreSQL
+   - MySQL
+   - SQLite
       
-      2. **NoSQL Databases**
-         - MongoDB
-         - Redis
-         - Firebase
+2. **NoSQL Databases**
+   - MongoDB
+   - Redis
+   - Firebase
       
-      3. **Considerations**
-         - Scalability needs
-         - Data structure
-         - Hosting requirements
-    `
+3. **Considerations**
+   - Scalability needs
+   - Data structure
+   - Hosting requirements
+`
   },
   {
     title: 'Setting Up Database',
     content: `
-      Example using Prisma with PostgreSQL:
+Example using Prisma with PostgreSQL:
 
-      \`\`\`javascript
-      // schema.prisma
-      datasource db {
-        provider = "postgresql"
-        url      = env("DATABASE_URL")
-      }
+\`\`\`javascript
+// schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-      model User {
-        id        String   @id
-        balance   Int      @default(0)
-        inventory String[]
-        createdAt DateTime @default(now())
-      }
+model User {
+  id        String   @id
+  balance   Int      @default(0)
+  inventory String[]
+  createdAt DateTime @default(now())
+}
 
-      // Database client setup
-      const { PrismaClient } = require('@prisma/client');
-      const prisma = new PrismaClient();
+// Database client setup
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-      // Example usage
-      async function createUser(userId) {
-        return await prisma.user.create({
-          data: {
-            id: userId,
-            balance: 100
-          }
-        });
-      }
+// Example usage
+async function createUser(userId) {
+  return await prisma.user.create({
+    data: {
+      id: userId,
+      balance: 100
+    }
+  });
+}
 
-      async function updateBalance(userId, amount) {
-        return await prisma.user.update({
-          where: { id: userId },
-          data: { 
-            balance: { increment: amount } 
-          }
-        });
-      }
-      \`\`\`
-    `
+async function updateBalance(userId, amount) {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { 
+      balance: { increment: amount } 
+    }
+  });
+}
+\`\`\`
+`
   },
   {
     title: 'Data Models',
     content: `
-      Design your data models:
+Design your data models:
 
-      \`\`\`javascript
-      // Example models for a gaming bot
-      model User {
-        id        String    @id
-        balance   Int       @default(0)
-        inventory Item[]
-        cooldowns Cooldown?
-      }
+\`\`\`javascript
+// Example models for a gaming bot
+model User {
+  id        String    @id
+  balance   Int       @default(0)
+  inventory Item[]
+  cooldowns Cooldown?
+}
 
-      model Item {
-        id       String @id @default(cuid())
-        name     String
-        type     String
-        value    Int
-        userId   String
-        user     User   @relation(fields: [userId], references: [id])
-      }
+model Item {
+  id       String @id @default(cuid())
+  name     String
+  type     String
+  value    Int
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+}
 
-      model Cooldown {
-        userId     String   @id
-        user       User     @relation(fields: [userId], references: [id])
-        daily      DateTime?
-        work       DateTime?
-        adventure  DateTime?
-      }
+model Cooldown {
+  userId     String   @id
+  user       User     @relation(fields: [userId], references: [id])
+  daily      DateTime?
+  work       DateTime?
+  adventure  DateTime?
+}
 
-      // Usage example
-      async function getInventory(userId) {
-        return await prisma.user.findUnique({
-          where: { id: userId },
-          include: { inventory: true }
-        });
-      }
+// Usage example
+async function getInventory(userId) {
+  return await prisma.user.findUnique({
+    where: { id: userId },
+    include: { inventory: true }
+  });
+}
 
-      async function addItem(userId, itemData) {
-        return await prisma.item.create({
-          data: {
-            ...itemData,
-            user: { connect: { id: userId } }
-          }
-        });
-      }
-      \`\`\`
-    `
+async function addItem(userId, itemData) {
+  return await prisma.item.create({
+    data: {
+      ...itemData,
+      user: { connect: { id: userId } }
+    }
+  });
+}
+\`\`\`
+`
   }
 ];
 ---
@@ -131,9 +146,8 @@ const sections = [
             <span class="text-[#5865F2] mr-2">{index + 1}.</span>
             {section.title}
           </h2>
-          <div class="prose prose-invert max-w-none">
-            {section.content}
-          </div>
+          <!-- Markdown içeriğini marked ile HTML’ye dönüştürüp render ediyoruz -->
+          <div class="prose prose-invert max-w-none section-content" set:html={marked(section.content)}></div>
         </div>
       ))}
     </div>
@@ -153,4 +167,82 @@ const sections = [
       </a>
     </div>
   </div>
+
+  <!-- Kod kutusu ve kopyalama butonunun stil tanımlamaları -->
+  <style>
+    .code-container {
+      position: relative;
+      background-color: #2B2D31;
+      border-radius: 8px;
+      margin: 1rem 0;
+      overflow: auto;
+    }
+    .code-container pre {
+      margin: 0;
+      padding: 1rem;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.875rem;
+      background: transparent;
+    }
+    .copy-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .copy-button:hover {
+      opacity: 1;
+    }
+    .copy-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: #f8f8f2;
+    }
+  </style>
+
+  <!-- JavaScript: Kod bloklarını sarmalayıp kopyalama butonunu ekliyoruz -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const codeBlocks = document.querySelectorAll('.section-content pre');
+      codeBlocks.forEach((block) => {
+        if (!block.parentElement.classList.contains('code-container')) {
+          const container = document.createElement('div');
+          container.className = 'code-container';
+          block.parentNode.insertBefore(container, block);
+          container.appendChild(block);
+
+          const button = document.createElement('button');
+          button.className = 'copy-button';
+          button.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24">
+              <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+            </svg>
+          `;
+          container.appendChild(button);
+
+          button.addEventListener('click', () => {
+            const codeText = block.innerText.trim();
+            navigator.clipboard.writeText(codeText).then(() => {
+              button.innerHTML = `
+                <svg class="copy-icon" viewBox="0 0 24 24">
+                  <path d="M9,16.17l-3.88-3.88L4,13.41,9,18.41l12-12L19.59,5l-10.59,10.59Z"/>
+                </svg>
+              `;
+              setTimeout(() => {
+                button.innerHTML = `
+                  <svg class="copy-icon" viewBox="0 0 24 24">
+                    <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+                  </svg>
+                `;
+              }, 2000);
+            });
+          });
+        }
+      });
+    });
+  </script>
 </Layout>
