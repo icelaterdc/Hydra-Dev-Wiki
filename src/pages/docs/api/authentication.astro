@@ -1,64 +1,79 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
+
+// Marked ayarlarını yapılandırıyoruz: Kod blokları highlight.js ile işlenecek.
+marked.setOptions({
+  highlight: (code, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(code, { language: lang }).value;
+    }
+    return hljs.highlightAuto(code).value;
+  },
+  gfm: true,
+  breaks: true,
+});
 
 const sections = [
   {
     title: 'Authentication Methods',
     content: `
-      Discord API supports multiple authentication methods:
+Discord API supports multiple authentication methods:
       
-      1. **Bot Token Authentication**
-         - Used for bot applications
-         - Most common method
-         - Highest level of access
+1. **Bot Token Authentication**
+   - Used for bot applications
+   - Most common method
+   - Highest level of access
       
-      2. **Bearer Token Authentication**
-         - Used for OAuth2 applications
-         - User-specific access
-         - Limited scope
-    `
+2. **Bearer Token Authentication**
+   - Used for OAuth2 applications
+   - User-specific access
+   - Limited scope
+`
   },
   {
     title: 'Bot Token Security',
     content: `
-      Securing your bot token is crucial:
+Securing your bot token is crucial:
 
-      \`\`\`javascript
-      // Load token from environment variables
-      require('dotenv').config();
-      const token = process.env.BOT_TOKEN;
+\`\`\`javascript
+// Load token from environment variables
+require('dotenv').config();
+const token = process.env.BOT_TOKEN;
 
-      // Initialize client with token
-      const client = new Client({
-        intents: [GatewayIntentBits.Guilds]
-      });
+// Initialize client with token
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds]
+});
 
-      client.login(token);
-      \`\`\`
+client.login(token);
+\`\`\`
 
-      Never:
-      - Commit tokens to version control
-      - Share tokens publicly
-      - Include tokens in client-side code
-    `
+Never:
+- Commit tokens to version control
+- Share tokens publicly
+- Include tokens in client-side code
+`
   },
   {
     title: 'OAuth2 Flow',
     content: `
-      Implementing OAuth2 authentication:
+Implementing OAuth2 authentication:
 
-      \`\`\`javascript
-      const OAUTH2_REDIRECT_URI = 'http://localhost:3000/callback';
-      const OAUTH2_SCOPES = ['identify', 'guilds'];
+\`\`\`javascript
+const OAUTH2_REDIRECT_URI = 'http://localhost:3000/callback';
+const OAUTH2_SCOPES = ['identify', 'guilds'];
 
-      // Generate OAuth2 URL
-      const authUrl = \`https://discord.com/api/oauth2/authorize
-        ?client_id=\${CLIENT_ID}
-        &redirect_uri=\${encodeURIComponent(OAUTH2_REDIRECT_URI)}
-        &response_type=code
-        &scope=\${OAUTH2_SCOPES.join('%20')}\`;
-      \`\`\`
-    `
+// Generate OAuth2 URL
+const authUrl = \`https://discord.com/api/oauth2/authorize
+  ?client_id=\${CLIENT_ID}
+  &redirect_uri=\${encodeURIComponent(OAUTH2_REDIRECT_URI)}
+  &response_type=code
+  &scope=\${OAUTH2_SCOPES.join('%20')}\`;
+\`\`\`
+`
   }
 ];
 ---
@@ -74,9 +89,8 @@ const sections = [
             <span class="text-[#5865F2] mr-2">{index + 1}.</span>
             {section.title}
           </h2>
-          <div class="prose prose-invert max-w-none">
-            {section.content}
-          </div>
+          <!-- Markdown içeriğini marked ile HTML’ye dönüştürüp render ediyoruz -->
+          <div class="prose prose-invert max-w-none section-content" set:html={marked(section.content)}></div>
         </div>
       ))}
     </div>
@@ -96,4 +110,82 @@ const sections = [
       </a>
     </div>
   </div>
+
+  <!-- Kod kutusu ve kopyalama butonunun stil tanımlamaları -->
+  <style>
+    .code-container {
+      position: relative;
+      background-color: #2B2D31;
+      border-radius: 8px;
+      margin: 1rem 0;
+      overflow: auto;
+    }
+    .code-container pre {
+      margin: 0;
+      padding: 1rem;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.875rem;
+      background: transparent;
+    }
+    .copy-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .copy-button:hover {
+      opacity: 1;
+    }
+    .copy-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: #f8f8f2;
+    }
+  </style>
+
+  <!-- JavaScript: Kod bloklarını sarmalayıp kopyalama butonunu ekliyoruz -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const codeBlocks = document.querySelectorAll('.section-content pre');
+      codeBlocks.forEach((block) => {
+        if (!block.parentElement.classList.contains('code-container')) {
+          const container = document.createElement('div');
+          container.className = 'code-container';
+          block.parentNode.insertBefore(container, block);
+          container.appendChild(block);
+
+          const button = document.createElement('button');
+          button.className = 'copy-button';
+          button.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24">
+              <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+            </svg>
+          `;
+          container.appendChild(button);
+
+          button.addEventListener('click', () => {
+            const codeText = block.innerText.trim();
+            navigator.clipboard.writeText(codeText).then(() => {
+              button.innerHTML = `
+                <svg class="copy-icon" viewBox="0 0 24 24">
+                  <path d="M9,16.17l-3.88-3.88L4,13.41,9,18.41l12-12L19.59,5l-10.59,10.59Z"/>
+                </svg>
+              `;
+              setTimeout(() => {
+                button.innerHTML = `
+                  <svg class="copy-icon" viewBox="0 0 24 24">
+                    <path d="M19,21H9a2,2,0,0,1-2-2V7H5V5h4V3h6V5h4V19A2,2,0,0,1,19,21ZM11,5h2V3H11Z"/>
+                  </svg>
+                `;
+              }, 2000);
+            });
+          });
+        }
+      });
+    });
+  </script>
 </Layout>
