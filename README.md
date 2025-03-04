@@ -1,6 +1,6 @@
 # Developer Wiki Sitesi
 
-Merhabalar dostlar, bu repodaki altyapıda astro frameworkünü kullandık. Altyapıda 
+Merhabalar dostlar, bu repodaki altyapıda astro frameworkünü kullandık. Altyapıda basit Discord bilgileri yer alıyor bunların içeriğini istediğiniz gibi değiştirebilirsiniz. Sayfalardaki yazılım kodlarını highlight.js ve marked kullanarak code editordeymiş gibi bir görünüm verdik. Bazı yerlere yorum metni ekledim neyin neye yaradığını bilmeniz kolaylaştırmak istedim. Adsense gerekliliklerine uygun olmasına özen gösterdik dilerseniz Google Adsense'ye bağlayıp gelir elde edebilirsiniz. Astro çalıştırmayı bilmiyorsanız aşağıda Astro'nun resmi başlangıç için basit bir kitini koyacağım.
 
 # Astro Starter Kit: Basics
 
