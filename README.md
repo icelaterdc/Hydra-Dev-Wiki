@@ -1,3 +1,7 @@
+# Developer Wiki Sitesi
+
+Merhabalar dostlar, bu repodaki altyapıda astro frameworkünü kullandık. Altyapıda 
+
 # Astro Starter Kit: Basics
 
 ```sh
